@@ -1,5 +1,6 @@
 from app import app
-from app.market.utils import queue_daemon
+from app.market.orderbook import queue_daemon
 if __name__ == "__main__":
+    #queue_daemon(app)
     app.run(debug = True)
-    queue_daemon(app)
+

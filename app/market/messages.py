@@ -13,8 +13,6 @@ from pprint import pprint
 
 class BaseMessage():
 	
-	
-
 	def __init__(self, *subclass_attributes, **kwargs):
 		self._allowedAttributes = ['owner']
 		self._allowedAttributes += list(subclass_attributes)
@@ -32,7 +30,10 @@ class Order(BaseMessage):
 	LIMIT = 'limit'
 	MARKET = 'market'
 
+	ID = 0
+	
 	def __init__(self, **kwargs):
+		ID += 1
 		self._allowedAttributes = ['price', 'initial_volume', 'type', 'side']
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
 		self.current_volume = self.initial_volume
