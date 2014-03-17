@@ -33,7 +33,7 @@ class Order(BaseMessage):
 	ID = 0
 	
 	def __init__(self, **kwargs):
-		ID += 1
+		self.ID += 1
 		self._allowedAttributes = ['price', 'initial_volume', 'type', 'side']
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
 		self.current_volume = self.initial_volume
