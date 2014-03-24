@@ -2,7 +2,8 @@ from app import app, book
 #from app.market.messages import Order
 from flask import render_template
 import logging
-from market import utils, Orderbook, orderbook
+from market import utils, Orderbook
+from market.orderbook import error_handler
 
 
 orderlog = logging.getLogger('orderlog')
@@ -31,4 +32,3 @@ def start_auction():
 	book.start_auction(app)
 	callback = render_template("index.html")
 	return callback
-

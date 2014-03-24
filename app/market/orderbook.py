@@ -36,31 +36,44 @@ def queuefunc(f):
     return f
 
 
+# Make decorator for catching exceptions and writing them to log
+
+def error_handler(f, *args):
+	logger = current_app.logger
+	def run():
+		try:
+			f(*args)
+		except Exception, e:
+			logger.error('Error detected: %s'%e)
+	return run
+
+# class test():
+# 	def __init(self):
+# 		self.p = multiprocessing.Process
+
 
 
 class Orderbook():
 	
-	#orderlog = logging.getLogger('orderlog')
-
 	ID = 0
 
 	def __init__(self):
 		self.ID += 1
 		self.buy_orders = Queue.PriorityQueue()
 		self.sell_orders = Queue.PriorityQueue()
-		
+		self.logger = logging.getLogger(__name__)
 	
 	def start_auction(self, app):
+		
 		if not hasattr(self, 'daemon'):
 			self.daemon = multiprocessing.Process(name = 'auction_%s'%self.ID, target = self.queue_daemon, args = (app,))		
 			self.daemon.start()
-		
+			self.logger.info('Starting auciton for orderbook %s'%self.ID)
+
 	def queue_daemon(self, app, rv_ttl=500):
-		print 'Starting auction daemon!'
 		while True:
-			print 'WAITING FOR ORDERS'
 			msg = app.redis.blpop(app.config['order_queue'])
-			print 'RECEIVED ORDERS'
+			self.logger.info('Received order')
 			key, order = loads(msg[1])
 			try:
 				rv = self.process_order(order)
@@ -72,29 +85,47 @@ class Orderbook():
 
 	@queuefunc
 	def process_order(self, new_order):
-		matching_order = self.get_matching_order(new_order)
-		print 'spank'
-		#print 'Processing order %s'%order
-		#return 'Processing complete message'
+		while True:
+			if new_order.current_volume == 0:
+				break
+			matching_order = self.get_matching_order(new_order)
+			if matching_order == None:
+				#error_handler(self.add_order)(new_order)
+				try:
+					self.add_order(new_order)
+				except Exception, e:
+					self.logger.exception('Could not add order')
+				break
+			else:
+				self.execute_transaction(new_order, matching_order)
+			
 
-	
+	import heapq
 
-		# if order.is_limit():
-		# 	if order.is_buy():
-		# 		print order.get_details()
-		# 		self.buy_orders.put()
-
-		# 	elif order.side == order.SELL:
-		# 		print order.get_details()
-		# 	else:
-		# 		raise Exception('Order side was not specified')
-		# elif order.type == 'MARKET':
-		# 	pass
-		# else:
-		# 	raise Exception('Order type was not specified')
-		
-		
-
-		# return {'best_buy':0, 'best_sell':0}
 	def get_matching_order(self, new_order):
+		matching_order = None
+		if new_order.is_buy():
+			try:
+				if new_order.price > self.sell_orders[0].price:
+					matching_order = heapq.heappop(self.sell_orders)
+			except IndexError:
+				self.logger.exception('PROBLEM')
+		elif new_order.is_sell():
+			pass
 		return None
+
+	#@error_handler
+	def add_order(self, new_order):
+		self.logger.error('Adding order')
+		if new_order.is_limit():
+			if new_order.is_buy():
+				self.buy_orders.put((new_order.price, new_order))
+			elif new_order.is_sell():
+				self.sell_orders.put((new_order.price, new_order))
+		else:
+			self.logger.debug('Discarding market order')
+		self.logger.error('Standing orders: %s, %s'%(self.buy_orders.qsize(), self.sell_orders.qsize()))
+
+
+	def execute_transaction(self, new_order, matching_order):
+		pass

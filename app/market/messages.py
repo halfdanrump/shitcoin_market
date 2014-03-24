@@ -38,6 +38,9 @@ class Order(BaseMessage):
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
 		self.current_volume = self.initial_volume
 
+	# def __len__(self):
+	# 	return self.price
+
 	def is_sell(self):
 		if self.side == self.SELL: return True
 		else: return False
