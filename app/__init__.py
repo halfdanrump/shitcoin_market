@@ -14,7 +14,7 @@ app.config['order_queue'] = 'my_queue'
 # l.error('TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTEEEEEEEEEEEEEEEEEEEEEEEEE')
 
 import logging
-error_handler = logging.FileHandler('errors.log')
+error_handler = logging.FileHandler('logs/errors.log')
 error_handler.setLevel(logging.ERROR)
 app.logger.addHandler(error_handler)
 
