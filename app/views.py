@@ -21,7 +21,7 @@ def index():
 @app.route('/order', methods = ['POST'])
 def order():
 	order = utils.get_random_order()
-	rv = book.process_order.queue_order(order)
+	rv = book.queue_order(order)
 	#print rv.return_value
 	#best_prices = orderbook.process_order.receive_order(order)
 	callback = render_template("index.html")
