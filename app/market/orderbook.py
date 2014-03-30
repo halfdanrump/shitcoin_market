@@ -82,6 +82,7 @@ class Orderbook():
 			logger.info('Cannot restart auction that is not already running at orderbook %s'%self.ID)
 	
 	def queue_order(self, order):
+		logger.debug('Received order: %s'%order)
 		qkey = current_app.config['order_queue']
 		key = '%s:result:%s' % (qkey, str(uuid4()))
 		s = dumps((key, order))
@@ -94,7 +95,6 @@ class Orderbook():
 		while True:
 			msg = app.redis.blpop(app.config['order_queue'])
 			key, order = loads(msg[1])
-			logger.debug('Received order: %s'%order)
 			try:
 				response = self.process_order(order)
 			except Exception, e:
@@ -106,6 +106,7 @@ class Orderbook():
 
 	#@error_handler
 	def process_order(self, new_order):
+		logger.debug('Processing order: %s'%new_order)
 		while True:
 			if new_order.current_volume == 0:
 				logger.debug('Order volume depleted: %s'%new_order.ID)

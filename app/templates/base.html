@@ -3,7 +3,23 @@
 		<title>Shitcoin Market</title>
 	</head>
 	<body>
-		{% block content %}
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <hr>
+    <span>
+    {% block place_order %}
     {% endblock %}
+  
+    {% block auction_control %}
+    {% endblock %}
+    </span>
   </body>
 <hmtl>
