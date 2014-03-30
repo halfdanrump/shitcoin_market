@@ -25,6 +25,7 @@ class BaseMessage():
 
 
 from datetime import datetime
+from uuid import uuid4
 
 @functools.total_ordering
 class Order(BaseMessage):
@@ -33,11 +34,9 @@ class Order(BaseMessage):
 	SELL = 'sell'
 	LIMIT = 'limit'
 	MARKET = 'market'
-
-	ID = 0
 	
 	def __init__(self, **kwargs):
-		self.ID += 1
+		self.ID = uuid4()
 		self.created_at = datetime.utcnow()
 		self._allowedAttributes = ['price', 'initial_volume', 'type', 'side']
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
@@ -48,6 +47,9 @@ class Order(BaseMessage):
 
 	def __gt__(self, other_order):
 		return self.price > other_order.price
+
+	def __repr__(self):
+		return '%s:%s@%s (%s shares)'%(self.type, self.side, self.price, self.initial_volume)
 
 	def is_sell(self):
 		if self.side == self.SELL: return True
