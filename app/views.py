@@ -21,7 +21,7 @@ def index():
 @app.route('/order', methods = ['POST'])
 def order():
 	order = utils.get_random_order()
-	rv = book.process_order.queue_order(order)
+	rv = book.queue_order(order)
 	#print rv.return_value
 	#best_prices = orderbook.process_order.receive_order(order)
 	callback = render_template("index.html")
@@ -30,5 +30,11 @@ def order():
 @app.route('/start', methods = ['POST'])
 def start_auction():
 	book.start_auction(app)
+	callback = render_template("index.html")
+	return callback
+
+@app.route('/restart', methods = ['POST'])
+def restart_auction():
+	book.restart_auction(app)
 	callback = render_template("index.html")
 	return callback

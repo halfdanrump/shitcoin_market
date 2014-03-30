@@ -11,6 +11,6 @@ handlers:
     class: logging.handlers.RotatingFileHandler
     level: ERROR
     formatter: simple
-    filename: errors.log
+    filename: app/logs/errors.log
     maxBytes: 100000000
     encoding: utf8

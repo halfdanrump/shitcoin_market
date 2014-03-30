@@ -34,4 +34,9 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+<<<<<<< HEAD
 logs
+=======
+log
+app/logs/
+>>>>>>> with_lists
