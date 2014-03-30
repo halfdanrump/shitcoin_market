@@ -40,3 +40,4 @@ logs
 log
 app/logs/
 >>>>>>> with_lists
+config.py
