@@ -120,30 +120,36 @@ class Orderbook():
 				break
 			else:
 				self.execute_transaction(new_order, matching_order)
-				if matching_order.current_volume > 0:
-					self.add_order(matching_order)
+				self.add_order(matching_order)
+			logger.debug('Standing orders: %s, %s'%(len(self.buy_orders), len(self.sell_orders)))
 
 
 	def get_matching_order(self, new_order):
 		if new_order.is_buy() and self.has_sell_orders():				
-			if new_order.price > self.best_sell_price():
+			if new_order.price >= self.best_sell_price():
 				return heapq.heappop(self.sell_orders)
 		elif new_order.is_sell() and self.has_buy_orders():
-			if new_order.price < self.best_buy_price():
+			if new_order.price <= self.best_buy_price():
 				return heapq.heappop(self.buy_orders)
 		else:
 			return None
 		
 	def add_order(self, new_order):
-		if new_order.is_limit():
-			if new_order.is_buy():
-				insort(self.buy_orders, new_order)
-			elif new_order.is_sell():
-				insort(self.sell_orders, new_order)
-		else:
-			logger.debug('Discarding market order')
-		logger.debug('Standing orders: %s, %s'%(len(self.buy_orders), len(self.sell_orders)))
+		if new_order.current_volume > 0:
+			if new_order.is_limit():
+				if new_order.is_buy():
+					insort(self.buy_orders, new_order)
+				elif new_order.is_sell():
+					insort(self.sell_orders, new_order)
+			else:
+				logger.debug('Discarding market order')
+		
 
+
+	def execute_transaction(self, new_order, matching_order):
+		transaction_volume = min(new_order.current_volume, matching_order.current_volume)
+		new_order.current_volume -= transaction_volume
+		matching_order.current_volume -= transaction_volume	
 
 	def has_buy_orders(self):
 		if len(self.buy_orders) > 0: return True
@@ -165,5 +171,4 @@ class Orderbook():
 		except IndexError:
 			return None
 
-	def execute_transaction(self, new_order, matching_order):
-		pass
+	
