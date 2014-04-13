@@ -55,6 +55,10 @@ def error_handler(f, *args, **kwargs):
 	return run_safe
 
 
+"""
+Make functions for processing orders pickeable so they can be pickled and stored in redis
+"""
+
 
 class Orderbook():
 
