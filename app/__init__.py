@@ -21,7 +21,7 @@ from flask.ext.socketio import SocketIO
 socketio = SocketIO(app)
 
 
-from app import views, market
+from app import views, market, config
 
 
 
