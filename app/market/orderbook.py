@@ -122,6 +122,9 @@ class Orderbook():
 				self.execute_transaction(new_order, matching_order)
 				self.add_order(matching_order)
 			logger.debug('Standing orders: %s, %s'%(len(self.buy_orders), len(self.sell_orders)))
+		logger.debug('asdasdasdasdasd')
+		
+		logger.debug(self.get_cumulative_book())
 
 
 	def get_matching_order(self, new_order):
@@ -170,5 +173,20 @@ class Orderbook():
 			return self.sell_orders[0].price
 		except IndexError:
 			return None
+
+	def get_buy_order_prices(self):
+		return [order.price for order in self.buy_orders]
+
+	def get_sell_order_prices(self):
+		return [order.price for order in self.sell_orders]
+
+	def get_cumulative_book(self):
+		buy_volume_dict = dict.fromkeys(set(self.get_buy_order_prices()), 0)
+		for o in self.buy_orders: buy_volume_dict[o.price] += o.current_volume
+		sell_volume_dict = dict.fromkeys(set(self.get_sell_order_prices()), 0)
+		for o in self.sell_orders: sell_volume_dict[o.price] += o.current_volume
+		return buy_volume_dict, sell_volume_dict
+
+
 
 	
