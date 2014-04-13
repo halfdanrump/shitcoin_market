@@ -9,9 +9,19 @@ app.redis = Redis()
 app.config['order_queue'] = 'my_queue'
 
 
+
 ### Create market objects
 book = Orderbook()
 
-from app import views, market, config
-
+from app import config
 app.config.from_object(config.app_config)
+
+### Create SocketIO wrapper for 
+from flask.ext.socketio import SocketIO
+socketio = SocketIO(app)
+
+
+from app import views, market
+
+
+

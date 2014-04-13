@@ -1,4 +1,4 @@
-from app import app, book
+from app import app, book, socketio
 #from app.market.messages import Order
 from flask import render_template, redirect, flash
 import logging

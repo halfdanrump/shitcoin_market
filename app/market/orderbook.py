@@ -70,7 +70,7 @@ class Orderbook():
 		if not hasattr(self, 'daemon'):
 			self.daemon = multiprocessing.Process(name = 'auction_%s'%self.ID, target = self.queue_daemon, args = (app,))		
 			self.daemon.start()
-			logger.info('Starting auciton for orderbook %s'%self.ID)
+			logger.info('Started auciton for orderbook %s'%self.ID)
 
 	def restart_auction(self, app):
 		if hasattr(self, 'daemon'):
