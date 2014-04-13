@@ -66,11 +66,16 @@ class Orderbook():
 		
 	
 	def start_auction(self, app):
+		from threading import Thread
 		""" Run this to start the auction. If the auction is already running, nothing happens"""
 		if not hasattr(self, 'daemon'):
-			self.daemon = multiprocessing.Process(name = 'auction_%s'%self.ID, target = self.queue_daemon, args = (app,))		
+			# self.daemon = multiprocessing.Process(name = 'auction_%s'%self.ID, target = self.queue_daemon, args = (app,))		
+			# self.daemon.start()
+			self.daemon = Thread(target = self.queue_daemon, args = (app,))		
 			self.daemon.start()
 			logger.info('Started auciton for orderbook %s'%self.ID)
+
+
 
 	def restart_auction(self, app):
 		if hasattr(self, 'daemon'):
@@ -80,6 +85,7 @@ class Orderbook():
 			self.start_auction(app)
 		else:
 			logger.info('Cannot restart auction that is not already running at orderbook %s'%self.ID)
+
 	
 	def queue_order(self, order):
 		logger.debug('Received order: %s'%order)
@@ -93,6 +99,7 @@ class Orderbook():
 	def queue_daemon(self, app, rv_ttl=500):
 		""" The daemon that listens for incoming orders. Must be run in a separate process. """
 		while True:
+			print 'HAHAHAHA'
 			msg = app.redis.blpop(app.config['order_queue'])
 			key, order = loads(msg[1])
 			try:

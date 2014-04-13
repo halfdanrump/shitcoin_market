@@ -17,6 +17,7 @@ from app import config
 app.config.from_object(config.app_config)
 
 ### Create SocketIO wrapper for 
+
 from flask.ext.socketio import SocketIO
 socketio = SocketIO(app)
 
