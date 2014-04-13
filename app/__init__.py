@@ -20,8 +20,4 @@ app.config.from_object(config.app_config)
 from flask.ext.socketio import SocketIO
 socketio = SocketIO(app)
 
-
-from app import views, market, config
-
-
-
+from app import views, market
