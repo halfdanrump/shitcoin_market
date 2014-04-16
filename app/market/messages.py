@@ -15,11 +15,11 @@ import functools
 class BaseMessage():
 	
 	def __init__(self, *subclass_attributes, **kwargs):
-		self._allowedAttributes = ['owner']
+		self._allowedAttributes = ['owner', 'received']
 		self._allowedAttributes += list(subclass_attributes)
 		self.__dict__.update(dict(map(lambda key: (key, kwargs.get(key, None)), self._allowedAttributes)))
-		self.created = datetime.utcnow()
-
+		self.created_at = datetime.utcnow()
+		
 	def __repr__(self):
 		return repr(self.__dict__)
 
