@@ -1,6 +1,33 @@
 <html>
 	<head>
 		<title>Shitcoin Market</title>
+    <title>Flask-SocketIO Test</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="http:////cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+            var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
+            // socket.on('orderbook updated', function() {
+            //     // Updates log element
+            //     $('#orderbook_data').append('<br>Orderbook updated! #');
+            // }); 
+            socket.on('orderbook update', function(book){
+              console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+              $('div#orderbook_data').append('hum');
+            });
+            $('form#new_order').submit(function(event) {
+                console.log('asdasdasdasd');
+                var form_data = $('form#new_order').serialize();
+                console.log(form_data);
+                $('div#last_order').val(form_data);
+                socket.emit('order placed', {data: form_data});
+                $('form#new_order' ).each(function(){
+                  this.reset();
+                });
+                return false;
+            });
+          });
+    </script>
 	</head>
 	<body>
     
@@ -14,15 +41,30 @@
       {% endif %}
     {% endwith %}
     <hr>
-    <span>
-    {% block place_order %}
-    {% endblock %}
-  
-    {% block auction_control %}
-    {% endblock %}
+    <p>Click to place random order</p>
 
-    {% block orderbook_status %}
-    {% endblock %}
-    </span>
+    <form id="emit" method='POST' action='#'>
+        <input type="text" name="emit_data" id="emit_data" placeholder="Message">
+        <input type="submit" value="Echo"></div>
+    </form>
+
+    <form id="new_order" action="#" method="post", name="new_order">
+      {{ order_form.hidden_tag() }}
+      <p>
+        <span>
+          Order price: {{ order_form.price(size = 4)}}
+          Order volume: {{ order_form.initial_volume(size = 4)}}
+        </span>
+      </p>
+      <p>
+        <span>
+          Buy or sell?: {{ order_form.side()}}
+          Order type: {{ order_form.type()}}
+        </span>
+      </p>
+      <input type="submit" value="Place order!">
+    </form>
+    <div id="orderbook_data"></div>
+    <div id="last_order"></div>
   </body>
 <hmtl>

@@ -25,17 +25,15 @@ def index():
 		order_data['created'] =  datetime.utcnow()
 		queue_order(rcon, 'book_1', order_data)
 		flash('Submitted order: %s'%order_data)
-
 		return redirect('/')
+
 	return render_template("index.html", order_form = order_form)
 
-@app.route('/order', methods = ['POST'])
-def order():
-	order = utils.get_random_order()
-	queue_order(redis, 'order', book_1)
-	#print rv.return_value
-	#best_prices = orderbook.process_order.receive_order(order)
-	return redirect('/')
+@socketio.on('order placed', namespace = '/test')
+def order_placed(form_data):
+	print 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFff'
+	print form_data
+	print 'KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK'
 
 # @app.route('/start', methods = ['POST'])
 # def start_auction():
