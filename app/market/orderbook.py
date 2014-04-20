@@ -8,12 +8,10 @@ from uuid import uuid4
 import multiprocessing
 import heapq
 from bisect import insort
-from redis import Redis
 ### Logging setup
 
 
 from app.market.messages import Order
-
 import logging.config, logging.handlers, yaml
 # config = yaml.load(open('../config/log_conf.yaml'))
 # logging.config.dictConfig(config)
@@ -44,7 +42,6 @@ logger.addHandler(handler)
 
 # Make decorator for catching exceptions and writing them to log
 
-active_auctions = dict()
 
 import functools
 def error_handler(f, *args, **kwargs):
@@ -60,10 +57,12 @@ def error_handler(f, *args, **kwargs):
 """
 Make functions for processing orders pickeable so they can be pickled and stored in redis
 """
+from redis import Redis
 def queue_order(redis, auction_id, order):
 		logger.debug('Received order: %s'%order)
 		s = dumps(order)
-		print redis.rpush(auction_id, s)
+		redis = Redis()
+		redis.rpush(auction_id, s)
 		
 
 
@@ -74,7 +73,6 @@ class Orderbook():
 		self.buy_orders = list()
 		self.sell_orders = list()
 		self.redis = Redis()
-		active_auctions[self.ID] = self
 		logger.info('ORDERBOOK INITIALIZED: %s'%self.ID)
 		
 		
@@ -84,7 +82,6 @@ class Orderbook():
 		if not hasattr(self, 'daemon'):
 			self.daemon = multiprocessing.Process(name = 'auction_%s'%self.ID, target = self.queue_daemon)		
 			self.daemon.start()
-			active_auctions[self.ID] = self
 			logger.info('Started auction for book %s'%self.ID)
 		else:
 			logger.info('Auction is already running at book %s'%self.ID)
@@ -94,7 +91,6 @@ class Orderbook():
 		if hasattr(self, 'daemon'):
 			self.daemon.terminate()
 			del self.daemon
-			active_auctions.pop(self.ID, None)
 			logger.info('Terminated auction at book %s'%self.ID)
 		else:
 			logger.info('Cannot stop auction that is not already running at book %s'%self.ID)
@@ -112,7 +108,6 @@ class Orderbook():
 			try:
 				response = self.process_order(order)
 				logger.debug('Finished processing order.')
-				print 'hum'
 			except Exception, e:
 				logger.exception(e)
 				response = e
@@ -136,7 +131,7 @@ class Orderbook():
 				self.execute_transaction(new_order, matching_order)
 				self.add_order(matching_order)
 			logger.debug('Standing orders: %s, %s'%(len(self.buy_orders), len(self.sell_orders)))
-		logger.debug('asdasdasdasdasd')
+		logger.debug('Finished processing orders')
 		
 		logger.debug(self.get_cumulative_book())
 
@@ -205,5 +200,4 @@ class Orderbook():
 
 if __name__ == "__main__":
 	book = Orderbook()
-	print active_auctions
 	book.queue_daemon()

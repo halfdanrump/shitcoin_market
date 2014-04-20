@@ -1,4 +1,4 @@
-from app import app, socketio
+from app import app, socketio, rcon
 #from app.market.messages import Order
 from flask import render_template, redirect, flash
 import logging
@@ -23,7 +23,7 @@ def index():
 		### Create order object form form data
 		order_data = dict(**order_form.data)
 		order_data['created'] =  datetime.utcnow()
-		queue_order(app.redis, 'book_1', order_data)
+		queue_order(rcon, 'book_1', order_data)
 		flash('Submitted order: %s'%order_data)
 
 		return redirect('/')
