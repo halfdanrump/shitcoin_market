@@ -40,6 +40,8 @@ class Order(BaseMessage):
 		self.created_at = datetime.utcnow()
 		self._allowedAttributes = ['price', 'initial_volume', 'type', 'side']
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
+		self.price = int(self.price)
+		self.initial_volume = int(self.initial_volume)
 		self.current_volume = self.initial_volume
 
 	def __eq__(self, other_order):

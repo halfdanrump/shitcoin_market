@@ -11,17 +11,22 @@
             //     // Updates log element
             //     $('#orderbook_data').append('<br>Orderbook updated! #');
             // }); 
+            socket.on('order receive success', function(){
+              $('div#messages').append('Order received!');
+            });
+
             socket.on('orderbook update', function(book){
               console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
               $('div#orderbook_data').append('hum');
             });
+
             $('form#new_order').submit(function(event) {
                 console.log('asdasdasdasd');
                 var form_data = $('form#new_order').serialize();
                 console.log(form_data);
                 $('div#last_order').val(form_data);
-                socket.emit('order placed', {data: form_data});
-                $('form#new_order' ).each(function(){
+                socket.emit('order submitted', {data: form_data});
+                $('form#new_order').each(function(){
                   this.reset();
                 });
                 return false;
@@ -65,6 +70,6 @@
       <input type="submit" value="Place order!">
     </form>
     <div id="orderbook_data"></div>
-    <div id="last_order"></div>
+    <div id="messages"></div>
   </body>
 <hmtl>

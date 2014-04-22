@@ -13,6 +13,8 @@ from bisect import insort
 
 from app.market.messages import Order
 import logging.config, logging.handlers, yaml
+
+from datetime import datetime
 # config = yaml.load(open('../config/log_conf.yaml'))
 # logging.config.dictConfig(config)
 
@@ -40,27 +42,16 @@ logger.addHandler(handler)
 #         return self._rv
 
 
-# Make decorator for catching exceptions and writing them to log
-
-
-import functools
-def error_handler(f, *args, **kwargs):
-	@functools.wraps(f) ### Necessary to update the module of the decorated function so that flask detects the right application context
-	def run_safe(*args, **kwargs):
-		try:
-			f(*args, **kwargs)
-		except Exception, e:
-			logger.error('Error detected: %s'%e)
-	return run_safe
 
 
 """
 Make functions for processing orders pickeable so they can be pickled and stored in redis
 """
 from redis import Redis
-def queue_order(redis, auction_id, order):
-		logger.debug('Received order: %s'%order)
-		s = dumps(order)
+def queue_order(redis, auction_id, order_data):
+		logger.debug('Received order: %s'%order_data)
+		order_data['received'] = datetime.utcnow()
+		s = dumps(order_data)
 		redis = Redis()
 		redis.rpush(auction_id, s)
 		
