@@ -34,4 +34,4 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-app/logs/
+app/logs/orderbook.log
