@@ -1,7 +1,7 @@
 import Queue
 import logging
 
-from pickle import loads, dumps
+from cPickle import loads, dumps
 
 from uuid import uuid4
 
@@ -56,6 +56,8 @@ def queue_order(redis, auction_id, order_data):
 		redis.rpush(auction_id, s)
 		
 
+from flask.ext.socketio import emit
+from app import socketio
 
 class Orderbook():
 
@@ -89,23 +91,24 @@ class Orderbook():
 	
 	
 
-
+	
 	def queue_daemon(self, rv_ttl=500):
 		""" The daemon that listens for incoming orders. Must be run in a separate process. """
 		while True:
 			logger.debug('Waiting for orders...')
-			order = self.redis.blpop(self.ID)
-			order = loads(order[1])
+			order_form_data = self.redis.blpop(self.ID)
+			order_form_data = loads(order_form_data[1])
+			new_order = Order(**order_form_data)
 			try:
-				response = self.process_order(order)
+				response = self.process_order(new_order)
 				logger.debug('Finished processing order.')
 			except Exception, e:
 				logger.exception(e)
 				response = e
 
 	#@error_handler
-	def process_order(self, order_form_data):
-		new_order = Order(**order_form_data)
+	def process_order(self, new_order):
+		
 		logger.debug('Processing order: %s'%new_order)
 		while True:
 			if new_order.current_volume == 0:
@@ -123,8 +126,12 @@ class Orderbook():
 				self.add_order(matching_order)
 			logger.debug('Standing orders: %s, %s'%(len(self.buy_orders), len(self.sell_orders)))
 		logger.debug('Finished processing orders')
-		
-		logger.debug(self.get_cumulative_book())
+		try:
+			buy_side, sell_side = self.get_cumulative_book()
+			socketio.emit('orderbook update', {'buy_side':buy_side, 'sell_side': sell_side}, namespace='/test')
+			logger.debug('Emitted message')
+		except Exception, e:
+			logger.debug(e)
 
 
 	def get_matching_order(self, new_order):

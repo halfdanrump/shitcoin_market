@@ -17,7 +17,8 @@
 
             socket.on('orderbook update', function(book){
               console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-              $('div#orderbook_data').append('hum');
+              console.log(book);
+              $('div#orderbook_data').append(book);
             });
 
             $('form#new_order').submit(function(event) {

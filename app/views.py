@@ -18,7 +18,6 @@ orderlog = logging.getLogger('orderlog')
 
 @app.route('/', methods = ['GET', 'POST'])
 def index():
-	print 'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdddd'
 	order_form = OrderForm()
 	if order_form.validate_on_submit():
 		### Create order object form form data
@@ -33,7 +32,6 @@ def index():
 @error_handler
 @socketio.on('order submitted', namespace = '/test')
 def order_placed(query_string):
-	print 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa'
 	try:
 		order_data = urlparse.parse_qs(query_string['data'])
 		order_data.pop('csrf_token')
@@ -45,16 +43,3 @@ def order_placed(query_string):
 			emit('order receive failure')
 	except Exception, e:
 		print e
-# @socketio.on('order received', namespace='/test')
-# def order_received():
-
-
-# @app.route('/start', methods = ['POST'])
-# def start_auction():
-# 	book.start_auction(app)
-# 	return redirect('/')
-
-# @app.route('/restart', methods = ['POST'])
-# def restart_auction():
-# 	book.restart_auction(app)
-# 	return redirect('/')
