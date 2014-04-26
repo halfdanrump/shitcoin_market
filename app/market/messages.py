@@ -51,7 +51,8 @@ class Order(BaseMessage):
 		return self.price > other_order.price
 
 	def __repr__(self):
-		return '%s:%s@%s (%s shares)'%(self.type, self.side, self.price, self.initial_volume)
+		# return '%s:%s@%s (%s shares)'%(self.type, self.side, self.price, self.initial_volume)
+		return str(dict(map(lambda x: (x, getattr(self, x)), self._allowedAttributes)))
 
 	def is_sell(self):
 		if self.side == self.SELL: return True
