@@ -4,33 +4,30 @@
     <title>Flask-SocketIO Test</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="http:////cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
             var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');
-            // socket.on('orderbook updated', function() {
-            //     // Updates log element
-            //     $('#orderbook_data').append('<br>Orderbook updated! #');
-            // }); 
-            socket.on('order receive success', function(){
-              $('div#messages').append('Order received!');
-            });
-
-            socket.on('order receive failure', function(){
-              $('div#messages').append('Order was NOT received!');
+            socket.on('order validation', function(message){
+              $('div#messages').append(message)
             });
 
 
             socket.on('orderbook update', function(book){
-              console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
               console.log(book);
-              console.log(book['buy_side']);
-              $('div#orderbook_data').append(book);
+              $.each(Object.keys(jQuery.parseJSON(book['sell_side'])).sort().reverse(), function(price){
+                console.log('price' + price);
+                $('#orderbook_table').append('<tr><td>' + 'adsa' + '</td><td>' + price + '</td><td></td></tr>');
+              });
+              $.each(jQuery.parseJSON(book['buy_side']), function(price, volume){
+                $('#orderbook_table').append('<tr><td></td><td>' + price + '</td><td>' + volume +'</td></tr>');
+              });
+              
+              // $('div#orderbook_data').append(book);
             });
 
             $('form#new_order').submit(function(event) {
-                console.log('asdasdasdasd');
                 var form_data = $('form#new_order').serialize();
-                console.log(form_data);
                 $('div#last_order').val(form_data);
                 socket.emit('order submitted', {data: form_data});
                 $('form#new_order').each(function(){
@@ -38,6 +35,7 @@
                 });
                 return false;
             });
+            // $('#example').dataTable();
           });
     </script>
 	</head>
@@ -52,13 +50,7 @@
         </ul>
       {% endif %}
     {% endwith %}
-    <hr>
     <p>Click to place random order</p>
-
-    <form id="emit" method='POST' action='#'>
-        <input type="text" name="emit_data" id="emit_data" placeholder="Message">
-        <input type="submit" value="Echo"></div>
-    </form>
 
     <form id="new_order" action="#" method="post", name="new_order">
       {{ order_form.hidden_tag() }}
@@ -76,7 +68,15 @@
       </p>
       <input type="submit" value="Place order!">
     </form>
-    <div id="orderbook_data"></div>
+    <div id="orderbook_data">
+      <table id="orderbook_table">
+        <tr>
+          <th>Sell volume</th>
+          <th>Price</th>
+          <th>Buy volume</th>
+        </tr>
+      </table>
+    </div>
     <div id="messages"></div>
-  </body>
+   </body>
 <hmtl>

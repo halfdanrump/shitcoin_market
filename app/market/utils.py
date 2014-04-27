@@ -20,7 +20,17 @@ def get_many_random_orders(n_buy, n_sell):
 	return buy_orders, sell_orders
 
 def verify_order_data(order_data):
-	return True
+	try:
+		int(order_data['price'])
+		int(order_data['initial_volume'])
+	except Exception:
+		return False, 'Price and volume must be a number'
+	if order_data['type'] != Order.LIMIT and order_data['type'] != Order.MARKET:
+		return False, 'Order type must be either LIMIT or MARKET'
+	if order_data['side'] != Order.BUY and order_data['side'] != Order.SELL:
+		return False, 'Order must be either BUY or SELL order'
+	return True, 'Order validated successfully'
+
 
 import functools
 def error_handler(f, *args, **kwargs):

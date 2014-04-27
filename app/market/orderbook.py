@@ -1,7 +1,7 @@
 import Queue
 import logging
 
-from cPickle import loads, dumps
+from cPickle import loads
 
 from uuid import uuid4
 
@@ -17,7 +17,7 @@ from app import eventhandlers
 from app import logger
 from datetime import datetime
 from redis import Redis
-
+import time
 
 
 class Orderbook():
@@ -65,7 +65,6 @@ class Orderbook():
 				response = e
 
 	def process_order(self, new_order):
-		
 		logger.info('Processing order: %s'%new_order)
 		while True:
 			if new_order.current_volume == 0:

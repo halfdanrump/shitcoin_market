@@ -17,5 +17,7 @@ app.config.from_object(config.app_config)
 from flask.ext.socketio import SocketIO
 socketio = SocketIO(app)
 
+from redis import Redis
+rcon = Redis()
 
 from app import views, eventhandlers
