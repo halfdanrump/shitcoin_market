@@ -6,7 +6,7 @@
     <script type="text/javascript" src="http:////cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
-            var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
+            var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');
             // socket.on('orderbook updated', function() {
             //     // Updates log element
             //     $('#orderbook_data').append('<br>Orderbook updated! #');
@@ -15,9 +15,15 @@
               $('div#messages').append('Order received!');
             });
 
+            socket.on('order receive failure', function(){
+              $('div#messages').append('Order was NOT received!');
+            });
+
+
             socket.on('orderbook update', function(book){
               console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
               console.log(book);
+              console.log(book['buy_side']);
               $('div#orderbook_data').append(book);
             });
 

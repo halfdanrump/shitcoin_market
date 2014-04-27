@@ -12,52 +12,13 @@ from bisect import insort
 
 
 from app.market.messages import Order
-import logging.config, logging.handlers, yaml
 
+from app import eventhandlers
+from app import logger
 from datetime import datetime
-# config = yaml.load(open('../config/log_conf.yaml'))
-# logging.config.dictConfig(config)
-
-
-logger = logging.getLogger(__name__)
-logger.setLevel('DEBUG')
-handler = logging.handlers.RotatingFileHandler('orderbook.log', maxBytes = 10**6)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-
-
-# class DelayedResult(object):
-#     def __init__(self, key):
-#         self.key = key
-#         self._rv = None
-
-#     @property
-#     def return_value(self):
-#         if self._rv is None:
-#             rv = current_app.redis.get(self.key)
-#             if rv is not None:
-#                 self._rv = loads(rv)
-#         return self._rv
-
-
-
-
-"""
-Make functions for processing orders pickeable so they can be pickled and stored in redis
-"""
 from redis import Redis
-def queue_order(redis, auction_id, order_data):
-		logger.debug('Received order: %s'%order_data)
-		order_data['received'] = datetime.utcnow()
-		s = dumps(order_data)
-		redis = Redis()
-		redis.rpush(auction_id, s)
-		
 
-from flask.ext.socketio import emit
-from app import socketio
+
 
 class Orderbook():
 
@@ -89,9 +50,6 @@ class Orderbook():
 			logger.info('Cannot stop auction that is not already running at book %s'%self.ID)
 
 	
-	
-
-	
 	def queue_daemon(self, rv_ttl=500):
 		""" The daemon that listens for incoming orders. Must be run in a separate process. """
 		while True:
@@ -106,10 +64,9 @@ class Orderbook():
 				logger.exception(e)
 				response = e
 
-	#@error_handler
 	def process_order(self, new_order):
 		
-		logger.debug('Processing order: %s'%new_order)
+		logger.info('Processing order: %s'%new_order)
 		while True:
 			if new_order.current_volume == 0:
 				logger.debug('Order volume depleted: %s'%new_order.ID)
@@ -126,13 +83,8 @@ class Orderbook():
 				self.add_order(matching_order)
 			logger.debug('Standing orders: %s, %s'%(len(self.buy_orders), len(self.sell_orders)))
 		logger.debug('Finished processing orders')
-		try:
-			buy_side, sell_side = self.get_cumulative_book()
-			socketio.emit('orderbook update', {'buy_side':buy_side, 'sell_side': sell_side}, namespace='/test')
-			logger.debug('Emitted message')
-		except Exception, e:
-			logger.debug(e)
-
+		eventhandlers.transmit_book_to_client(self)
+		
 
 	def get_matching_order(self, new_order):
 		if new_order.is_buy() and self.has_sell_orders():				
