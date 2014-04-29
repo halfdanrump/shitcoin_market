@@ -2,9 +2,10 @@
 	<head>
 		<title>Shitcoin Market</title>
     <title>Flask-SocketIO Test</title>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="http:////cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
-    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="static/javascript/min/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="static/javascript/min/socket.io.min.js"></script>
+    <script type="text/javascript" src="static/javascript/min/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="static/javascript/utils.js" charset="utf-8"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
             var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');
@@ -15,15 +16,14 @@
 
             socket.on('orderbook update', function(book){
               console.log(book);
-              $.each(Object.keys(jQuery.parseJSON(book['sell_side'])).sort().reverse(), function(price){
-                console.log('price' + price);
-                $('#orderbook_table').append('<tr><td>' + 'adsa' + '</td><td>' + price + '</td><td></td></tr>');
+              var b = '<tr><th>Sell volume</th><th>Price</th><th>Buy volume</th></tr>';
+              $.each(jQuery.parseJSON(book['sell_side']), function(index, tuple){
+                b += '<tr><td>' + tuple[1] + '</td><td>' + tuple[0] + '</td><td></td></tr>';
               });
-              $.each(jQuery.parseJSON(book['buy_side']), function(price, volume){
-                $('#orderbook_table').append('<tr><td></td><td>' + price + '</td><td>' + volume +'</td></tr>');
+              $.each(jQuery.parseJSON(book['buy_side']), function(index, tuple){
+                b += '<tr><td></td><td>' + tuple[0] + '</td><td>' + tuple[1] +'</td></tr>';
               });
-              
-              // $('div#orderbook_data').append(book);
+              $('#orderbook_table').html(b);
             });
 
             $('form#new_order').submit(function(event) {

@@ -141,10 +141,12 @@ class Orderbook():
 
 	def get_cumulative_book(self):
 		buy_volume_dict = dict.fromkeys(set(self.get_buy_order_prices()), 0)
-		for o in self.buy_orders: buy_volume_dict[o.price] += o.current_volume
+		for o in self.buy_orders: 
+			buy_volume_dict[o.price] += o.current_volume
 		sell_volume_dict = dict.fromkeys(set(self.get_sell_order_prices()), 0)
-		for o in self.sell_orders: sell_volume_dict[o.price] += o.current_volume
-		return buy_volume_dict, sell_volume_dict
+		for o in self.sell_orders: 
+			sell_volume_dict[o.price] += o.current_volume
+		return sorted(buy_volume_dict.items(), reverse = True), sorted(sell_volume_dict.items(), reverse = True)
 
 
 if __name__ == "__main__":

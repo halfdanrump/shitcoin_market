@@ -19,5 +19,5 @@ def index():
 	# 	flash('Submitted order: %s'%order_data)
 	# 	return redirect('/')
 
-	return render_template("index.html", order_form = order_form)
+	return render_template("index.html", order_form = order_form, auction_id = 'auction_1')
 

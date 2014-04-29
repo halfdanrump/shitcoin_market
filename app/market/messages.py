@@ -1,6 +1,7 @@
 from datetime import datetime
 from pprint import pprint
 import functools
+from app import logger
 # class testDecorator(initFunc):
 # 	def __init__(self, **kwargs):
 # 		print 'In __init__ of decorator'
@@ -15,10 +16,13 @@ import functools
 class BaseMessage():
 	
 	def __init__(self, *subclass_attributes, **kwargs):
-		self._allowedAttributes = ['owner', 'received']
-		self._allowedAttributes += list(subclass_attributes)
-		self.__dict__.update(dict(map(lambda key: (key, kwargs.get(key, None)), self._allowedAttributes)))
-		self.created_at = datetime.utcnow()
+		try:
+			self._allowedAttributes = ['owner', 'received']
+			self._allowedAttributes += list(subclass_attributes)
+			self.__dict__.update(dict(map(lambda key: (key, kwargs.get(key, None)), self._allowedAttributes)))
+			self.created_at = datetime.utcnow()
+		except Exception, e:
+			logger.exception(e)
 		
 	def __repr__(self):
 		return repr(self.__dict__)

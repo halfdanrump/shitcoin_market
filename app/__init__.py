@@ -1,6 +1,6 @@
 import logging.config, logging.handlers, yaml
 logger = logging.getLogger(__name__)
-logger.setLevel('DEBUG')
+logger.setLevel('INFO')
 handler = logging.handlers.RotatingFileHandler('orderbook.log', maxBytes = 10**6)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 # formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')

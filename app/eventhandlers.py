@@ -33,6 +33,7 @@ import json
 def transmit_book_to_client(orderbook):
 	try:
 		buy_side, sell_side = orderbook.get_cumulative_book()
+		print buy_side, sell_side
 		socketio.emit('orderbook update', 
 					{'buy_side':json.dumps(buy_side), 'sell_side': json.dumps(sell_side)}, 
 					namespace='/client')
