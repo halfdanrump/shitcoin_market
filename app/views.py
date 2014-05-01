@@ -1,4 +1,4 @@
-from app import app
+from app import flapp
 from flask import render_template, redirect, flash
 from forms import OrderForm
 
@@ -8,7 +8,7 @@ from forms import OrderForm
 #log.setLevel(logging.DEBUG)
 
 
-@app.route('/', methods = ['GET', 'POST'])
+@flapp.route('/', methods = ['GET', 'POST'])
 def index():
 	order_form = OrderForm()
 	# if order_form.validate_on_submit():

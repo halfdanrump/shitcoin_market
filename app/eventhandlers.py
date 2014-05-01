@@ -41,5 +41,8 @@ def transmit_book_to_client(orderbook):
 	except Exception, e:
 		logger.debug(e)
 
+def invalid_message(exception):
+	logger.exception(exception)
+
 # @socketio.on('order receive success', namepace = '/client')
 # def 

@@ -1,7 +1,8 @@
 from datetime import datetime
 from pprint import pprint
 import functools
-from app import logger
+# from app import logger# eventhandlers
+# from .. import eventhandlers
 # class testDecorator(initFunc):
 # 	def __init__(self, **kwargs):
 # 		print 'In __init__ of decorator'
@@ -14,18 +15,27 @@ from app import logger
 # @testDecorator
 
 class BaseMessage():
-	
 	def __init__(self, *subclass_attributes, **kwargs):
+		self._integerAttributes = ['price', 'volume']
 		try:
 			self._allowedAttributes = ['owner', 'received']
 			self._allowedAttributes += list(subclass_attributes)
 			self.__dict__.update(dict(map(lambda key: (key, kwargs.get(key, None)), self._allowedAttributes)))
 			self.created_at = datetime.utcnow()
+			map(lambda a: setattr(self, attr, int(getattr(self, attr))), self._integerAttributes)
 		except Exception, e:
-			logger.exception(e)
+			pass
+			# logger.exception(e)
+			#eventhandlers.invalid_message(e)
 		
 	def __repr__(self):
 		return repr(self.__dict__)
+
+
+class Transaction(BaseMessage):
+	def __init__(self, **kwargs):
+		self._allowedAttributes = ['buyer', 'seller', 'sell_order', 'buy_order', 'price', 'volume']
+		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
 
 
 from datetime import datetime
@@ -42,21 +52,9 @@ class Order(BaseMessage):
 	def __init__(self, **kwargs):
 		self.ID = uuid4()
 		self.created_at = datetime.utcnow()
-		self._allowedAttributes = ['price', 'initial_volume', 'type', 'side']
+		self._allowedAttributes = ['price', 'volume', 'type', 'side']
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
-		self.price = int(self.price)
-		self.initial_volume = int(self.initial_volume)
-		self.current_volume = self.initial_volume
 
-	def __eq__(self, other_order):
-		return isinstance(self, other_order.__class__) and self.price == other_order.price
-
-	def __gt__(self, other_order):
-		return self.price > other_order.price
-
-	def __repr__(self):
-		# return '%s:%s@%s (%s shares)'%(self.type, self.side, self.price, self.initial_volume)
-		return str(dict(map(lambda x: (x, getattr(self, x)), self._allowedAttributes)))
 
 	def is_sell(self):
 		if self.side == self.SELL: return True
@@ -78,4 +76,13 @@ class Order(BaseMessage):
 		if self.price < other_order.price: return True
 
 	def get_details(self):
-		return '%s order for %s shares at price %s'%(self.side, self.current_volume, self.price)
+		return '%s order for %s shares at price %s'%(self.side, self.volume, self.price)
+
+	def __eq__(self, other_order):
+		return isinstance(self, other_order.__class__) and self.price == other_order.price
+
+	def __gt__(self, other_order):
+		return self.price > other_order.price
+
+	def __repr__(self):
+		return str(dict(map(lambda x: (x, getattr(self, x)), self._allowedAttributes)))

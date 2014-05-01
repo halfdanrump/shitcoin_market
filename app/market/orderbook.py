@@ -105,13 +105,13 @@ class Orderbook():
 					insort(self.sell_orders, new_order)
 			else:
 				logger.debug('Discarding market order')
-		
 
 
 	def execute_transaction(self, new_order, matching_order):
 		transaction_volume = min(new_order.current_volume, matching_order.current_volume)
 		new_order.current_volume -= transaction_volume
 		matching_order.current_volume -= transaction_volume	
+		eventhandlers.transmit_transaction()
 
 	def has_buy_orders(self):
 		if len(self.buy_orders) > 0: return True

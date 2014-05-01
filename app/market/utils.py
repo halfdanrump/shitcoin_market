@@ -11,7 +11,7 @@ def get_random_order(side = None):
 		else:
 			side = Order.SELL
 	received = datetime.utcnow()
-	order = Order(**{'initial_volume':volume, 'price':price, 'type':Order.LIMIT, 'side':side, 'received':received})
+	order = Order(**{'volume':volume, 'price':price, 'type':Order.LIMIT, 'side':side, 'received':received})
 	return order
 
 def get_many_random_orders(n_buy, n_sell):
@@ -22,9 +22,11 @@ def get_many_random_orders(n_buy, n_sell):
 def verify_order_data(order_data):
 	try:
 		int(order_data['price'])
-		int(order_data['initial_volume'])
-	except Exception:
+		int(order_data['volume'])
+	except ValueError:
 		return False, 'Price and volume must be a number'
+	except Exception, e:
+		logger.exception(e)
 	if order_data['type'] != Order.LIMIT and order_data['type'] != Order.MARKET:
 		return False, 'Order type must be either LIMIT or MARKET'
 	if order_data['side'] != Order.BUY and order_data['side'] != Order.SELL:
