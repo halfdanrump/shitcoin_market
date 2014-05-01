@@ -1,6 +1,9 @@
 from datetime import datetime
 from pprint import pprint
 import functools
+from uuid import uuid4
+import json
+
 # from app import logger# eventhandlers
 # from .. import eventhandlers
 # class testDecorator(initFunc):
@@ -31,15 +34,20 @@ class BaseMessage():
 	def __repr__(self):
 		return repr(self.__dict__)
 
+	def get_json(self):
+		data = dict(map(lambda attr: (attr, getattr(self, attr)), self._allowedAttributes))
+		data['received'] = data['received'].strftime('%Y-%m-%d-%H:%M')
+		return json.dumps(data)
+
 
 class Transaction(BaseMessage):
 	def __init__(self, **kwargs):
 		self._allowedAttributes = ['buyer', 'seller', 'sell_order', 'buy_order', 'price', 'volume']
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
+		
 
 
-from datetime import datetime
-from uuid import uuid4
+
 
 @functools.total_ordering
 class Order(BaseMessage):
@@ -54,7 +62,12 @@ class Order(BaseMessage):
 		self.created_at = datetime.utcnow()
 		self._allowedAttributes = ['price', 'volume', 'type', 'side']
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
-
+	
+	def breed(self, child_volume):
+		child = Order()
+		map(lambda attr: setattr(child, attr, getattr(self, attr)), self._allowedAttributes)
+		child.volume = child_volume
+		return child
 
 	def is_sell(self):
 		if self.side == self.SELL: return True
