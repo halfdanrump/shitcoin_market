@@ -11,7 +11,7 @@ from bisect import insort
 ### Logging setup
 
 
-from app.market.messages import Order
+from app.market.messages import Order, Transaction
 
 from app import eventhandlers
 from app import logger
@@ -78,7 +78,8 @@ class Orderbook():
 				self.add_order(new_order)
 				break
 			else:
-				self.execute_transaction(new_order, matching_order)
+				transaction_volume = self.execute_transaction(new_order, matching_order)
+				child_order = matching_order.breed()
 				self.add_order(matching_order)
 			logger.debug('Standing orders: %s, %s'%(len(self.buy_orders), len(self.sell_orders)))
 		logger.debug('Finished processing orders')
@@ -108,10 +109,12 @@ class Orderbook():
 
 
 	def execute_transaction(self, new_order, matching_order):
-		transaction_volume = min(new_order.current_volume, matching_order.current_volume)
-		new_order.current_volume -= transaction_volume
-		matching_order.current_volume -= transaction_volume	
-		eventhandlers.transmit_transaction()
+		transaction_volume = min( new_order.current_volume, matching_order.current_volume )
+		child_new = new_order.breed( new_order.current_volume - transaction_volume )
+		child_matching = matching_order.breed( matching_order.current_volume - transaction_volume )
+		transaction = Transaction()
+		eventhandlers.transmit_transaction(transaction.get_json())
+		return child_new, child_matching
 
 	def has_buy_orders(self):
 		if len(self.buy_orders) > 0: return True
