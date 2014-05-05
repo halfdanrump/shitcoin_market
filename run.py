@@ -8,6 +8,7 @@ from threading import Thread
 if __name__ == "__main__":
     # socketio.redis = Redis()
     book = Orderbook()
+    flapp.book = book
     Thread(target=book.queue_daemon).start()
     socketio.run(flapp, host = '127.0.0.1', port = 5000)
 	# app.redis = Redis()

@@ -29,17 +29,17 @@ def order_placed(query_string):
 	except Exception, e:
 		print e
 
-import json
 def transmit_book_to_client(orderbook):
-	try:
-		buy_side, sell_side = orderbook.get_cumulative_book()
+	# try:
+		buy_side, sell_side = orderbook.get_cumulative_book(as_json = True)
 		print buy_side, sell_side
 		socketio.emit('orderbook update', 
-					{'buy_side':json.dumps(buy_side), 'sell_side': json.dumps(sell_side)}, 
+					{'buy_side':buy_side, 'sell_side': sell_side}, 
 					namespace='/client')
 		logger.debug('Sent orderbook volume to client')
-	except Exception, e:
-		logger.debug(e)
+	# except Exception, e:
+	# 	logger.debug('asdasd')
+	# 	logger.debug(e)
 
 def invalid_message(exception):
 	logger.exception(exception)

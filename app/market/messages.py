@@ -20,14 +20,12 @@ import json
 class BaseMessage():
 	def __init__(self, *subclass_attributes, **kwargs):
 		self._integerAttributes = ['price', 'volume']
-		try:
-			self._allowedAttributes = ['owner', 'received']
-			self._allowedAttributes += list(subclass_attributes)
-			self.__dict__.update(dict(map(lambda key: (key, kwargs.get(key, None)), self._allowedAttributes)))
-			self.created_at = datetime.utcnow()
-			map(lambda a: setattr(self, attr, int(getattr(self, attr))), self._integerAttributes)
-		except Exception, e:
-			pass
+		self._allowedAttributes = ['owner', 'received']
+		self._allowedAttributes += list(subclass_attributes)
+		self.__dict__.update(dict(map(lambda key: (key, kwargs.get(key, None)), self._allowedAttributes)))
+		self.created_at = datetime.utcnow()
+		print map(lambda attr: getattr(self, attr), self._integerAttributes)
+		map(lambda attr: setattr(self, attr, int(getattr(self, attr))), self._integerAttributes)
 			# logger.exception(e)
 			#eventhandlers.invalid_message(e)
 		
@@ -35,13 +33,14 @@ class BaseMessage():
 		return repr(self.__dict__)
 
 	def get_json(self):
-		data = dict(map(lambda attr: (attr, getattr(self, attr)), self._allowedAttributes))
+		data = self.get_attributes()
 		data['received'] = data['received'].strftime('%Y-%m-%d-%H:%M')
 		return json.dumps(data)
 
 
 class Transaction(BaseMessage):
-	def __init__(self, **kwargs):
+	def __init__(self, order1, order2, db = None, **kwargs):
+		assert isinstance(order1, Order) and isinstance(order2, Order), 'Transaction is initilaized by passing two order objects'
 		self._allowedAttributes = ['buyer', 'seller', 'sell_order', 'buy_order', 'price', 'volume']
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
 		
@@ -64,8 +63,9 @@ class Order(BaseMessage):
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
 	
 	def breed(self, child_volume):
-		child = Order()
-		map(lambda attr: setattr(child, attr, getattr(self, attr)), self._allowedAttributes)
+		print self.get_attributes()
+		child = Order(**self.get_attributes())
+		# map(lambda attr: setattr(child, attr, getattr(self, attr)), self._allowedAttributes)
 		child.volume = child_volume
 		return child
 
@@ -87,6 +87,9 @@ class Order(BaseMessage):
 
 	def is_cheaper(self, other_order):
 		if self.price < other_order.price: return True
+
+	def get_attributes(self):
+		return dict(map(lambda attr: (attr, getattr(self, attr)), self._allowedAttributes))
 
 	def get_details(self):
 		return '%s order for %s shares at price %s'%(self.side, self.volume, self.price)

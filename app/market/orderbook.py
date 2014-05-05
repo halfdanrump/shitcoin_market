@@ -18,6 +18,7 @@ from app import logger
 from datetime import datetime
 from redis import Redis
 import time
+import json
 
 
 class Orderbook():
@@ -67,7 +68,7 @@ class Orderbook():
 	def process_order(self, new_order):
 		logger.info('Processing order: %s'%new_order)
 		while True:
-			if new_order.current_volume == 0:
+			if new_order.volume == 0:
 				logger.debug('Order volume depleted: %s'%new_order.ID)
 				break
 
@@ -78,9 +79,9 @@ class Orderbook():
 				self.add_order(new_order)
 				break
 			else:
-				transaction_volume = self.execute_transaction(new_order, matching_order)
-				child_order = matching_order.breed()
-				self.add_order(matching_order)
+				child_new, child_matching = self.execute_transaction(new_order, matching_order)
+				new_order = child_new #This is sort of clumsy, but it will do for now.
+				self.add_order(child_matching)
 			logger.debug('Standing orders: %s, %s'%(len(self.buy_orders), len(self.sell_orders)))
 		logger.debug('Finished processing orders')
 		eventhandlers.transmit_book_to_client(self)
@@ -98,7 +99,7 @@ class Orderbook():
 			
 		
 	def add_order(self, new_order):
-		if new_order.current_volume > 0:
+		if new_order.volume > 0:
 			if new_order.is_limit():
 				if new_order.is_buy():
 					insort(self.buy_orders, new_order)
@@ -109,11 +110,11 @@ class Orderbook():
 
 
 	def execute_transaction(self, new_order, matching_order):
-		transaction_volume = min( new_order.current_volume, matching_order.current_volume )
-		child_new = new_order.breed( new_order.current_volume - transaction_volume )
-		child_matching = matching_order.breed( matching_order.current_volume - transaction_volume )
-		transaction = Transaction()
-		eventhandlers.transmit_transaction(transaction.get_json())
+		transaction_volume = min( new_order.volume, matching_order.volume )
+		child_new = new_order.breed( new_order.volume - transaction_volume )
+		child_matching = matching_order.breed( matching_order.volume - transaction_volume )
+		# transaction = Transaction()
+		# eventhandlers.transmit_transaction(transaction.get_json())
 		return child_new, child_matching
 
 	def has_buy_orders(self):
@@ -142,14 +143,23 @@ class Orderbook():
 	def get_sell_order_prices(self):
 		return [order.price for order in self.sell_orders]
 
-	def get_cumulative_book(self):
-		buy_volume_dict = dict.fromkeys(set(self.get_buy_order_prices()), 0)
+	def get_cumulative_book(self, as_json):
+		assert isinstance(as_json, bool)
+		buy_side = dict.fromkeys(set(self.get_buy_order_prices()), 0)
 		for o in self.buy_orders: 
-			buy_volume_dict[o.price] += o.current_volume
-		sell_volume_dict = dict.fromkeys(set(self.get_sell_order_prices()), 0)
+			buy_side[o.price] += o.volume
+		sell_side = dict.fromkeys(set(self.get_sell_order_prices()), 0)
 		for o in self.sell_orders: 
-			sell_volume_dict[o.price] += o.current_volume
-		return sorted(buy_volume_dict.items(), reverse = True), sorted(sell_volume_dict.items(), reverse = True)
+			sell_side[o.price] += o.volume
+
+		buy_side = sorted(buy_side.items(), reverse = True)
+		sell_side = sorted(sell_side.items(), reverse = True)
+
+		if as_json:
+			buy_side = json.dumps(buy_side)
+			sell_side = json.dumps(sell_side)
+
+		return buy_side, sell_side
 
 
 if __name__ == "__main__":
