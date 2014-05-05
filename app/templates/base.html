@@ -9,6 +9,8 @@
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
             var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');
+            socket.emit('client requests orderbook status')
+
             socket.on('order validation', function(message){
               $('div#messages').html(message)
             });

@@ -1,7 +1,6 @@
 from flask.ext.socketio import emit
 from app import logger
-from app import socketio
-
+from app import socketio, flapp
 
 from datetime import datetime
 import cPickle
@@ -29,20 +28,16 @@ def order_placed(query_string):
 	except Exception, e:
 		print e
 
-def transmit_book_to_client(orderbook):
-	# try:
-		buy_side, sell_side = orderbook.get_cumulative_book(as_json = True)
-		print buy_side, sell_side
-		socketio.emit('orderbook update', 
-					{'buy_side':buy_side, 'sell_side': sell_side}, 
-					namespace='/client')
-		logger.debug('Sent orderbook volume to client')
-	# except Exception, e:
-	# 	logger.debug('asdasd')
-	# 	logger.debug(e)
 
-def invalid_message(exception):
-	logger.exception(exception)
-
-# @socketio.on('order receive success', namepace = '/client')
-# def 
+@socketio.on('client requests orderbook status', namespace = '/client')
+def transmit_book_to_client(book = None):
+	if not book:
+		book = flapp.book
+		
+	buy_side, sell_side = book.get_cumulative_book(as_json = True)
+	print buy_side, sell_side
+	socketio.emit('orderbook update', 
+				{'buy_side':buy_side, 'sell_side': sell_side}, 
+				namespace='/client')
+	logger.debug('Sent orderbook volume to client')
+	
