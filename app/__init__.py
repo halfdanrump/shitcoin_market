@@ -10,6 +10,7 @@ logger.addHandler(handler)
 from flask import Flask
 flapp = Flask(__name__)
 
+flapp.orderbooks = dict()
 
 import config
 flapp.config.from_object(config.app_config)
@@ -20,4 +21,4 @@ socketio = SocketIO(flapp)
 from redis import Redis
 rcon = Redis()
 
-import forms, views, eventhandlers, market, tests
+import forms, views, eventhandlers, market, testing

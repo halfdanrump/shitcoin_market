@@ -20,5 +20,5 @@ def index():
 	# 	return redirect('/')
 	buy_side, sell_side = flapp.book.get_cumulative_book(as_json = True)
 	print buy_side, sell_side
-	return render_template("index.html", order_form = order_form, auction_id = 'auction_1')
+	return render_template("index.html", order_form = order_form, auction_id = 'orderbook_id_1')
 
