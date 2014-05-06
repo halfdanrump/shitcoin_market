@@ -1,5 +1,4 @@
-from app.testing import tester
-from app.testing.orderbook import OrderbookTests
+from app.testing.orderbook import BasicOrderbookTests
 import unittest
 
 if __name__ == "__main__":
