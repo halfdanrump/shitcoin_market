@@ -1,18 +1,19 @@
 from flask.ext.socketio import emit
 from app import logger
 from app import socketio, flapp
-
+from app.utils import prefixed
 from datetime import datetime
 import cPickle
+from app import rcon
+import urlparse
+from app.market.utils import verify_order_data
+
 def queue_order(redis, auction_id, order_data):
 	logger.debug('Received order: %s'%order_data)
 	order_data['received'] = datetime.utcnow()
-	redis.rpush(auction_id, cPickle.dumps(order_data))
+	redis.rpush(prefixed(auction_id), cPickle.dumps(order_data))
 
 
-from app import rcon
-import urlparse
-from app.market.utils import verify_order_data, error_handler
 @socketio.on('order submitted', namespace = '/client')
 def order_placed(query_string):
 	def convert_to_dict(order_form):
@@ -35,7 +36,7 @@ def transmit_book_to_client(book = None):
 		book = flapp.book
 		
 	buy_side, sell_side = book.get_cumulative_book(as_json = True)
-	print buy_side, sell_side
+	
 	socketio.emit('orderbook update', 
 				{'buy_side':buy_side, 'sell_side': sell_side}, 
 				namespace='/client')

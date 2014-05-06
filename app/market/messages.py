@@ -4,18 +4,6 @@ import functools
 from uuid import uuid4
 import json
 
-# from app import logger# eventhandlers
-# from .. import eventhandlers
-# class testDecorator(initFunc):
-# 	def __init__(self, **kwargs):
-# 		print 'In __init__ of decorator'
-# 		self.initFunc = initFunc
-
-# 	def __call__(self, attr):
-# 		print 'In call of decorator'
-# 		self.initFunc()
-
-# @testDecorator
 
 class BaseMessage():
 	def __init__(self, *subclass_attributes, **kwargs):
@@ -26,9 +14,8 @@ class BaseMessage():
 		self.created_at = datetime.utcnow()
 		print map(lambda attr: getattr(self, attr), self._integerAttributes)
 		map(lambda attr: setattr(self, attr, int(getattr(self, attr))), self._integerAttributes)
-			# logger.exception(e)
-			#eventhandlers.invalid_message(e)
 		
+
 	def __repr__(self):
 		return repr(self.__dict__)
 

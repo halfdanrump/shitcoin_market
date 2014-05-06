@@ -1,4 +1,4 @@
-from messages import Order
+from app.market.messages import Order
 from datetime import datetime
 import random
 
@@ -34,16 +34,3 @@ def verify_order_data(order_data):
 	if order_data['side'] != Order.BUY and order_data['side'] != Order.SELL:
 		return False, 'Order must be either BUY or SELL order'
 	return True, 'Order validated successfully'
-
-
-
-import functools
-def error_handler(f, *args, **kwargs):
-	@functools.wraps(f) ### Necessary to update the module of the decorated function so that flask detects the right application context
-	def run_safe(*args, **kwargs):
-		try:
-			f(*args, **kwargs)
-		except Exception, e:
-			print e
-			# logger.error('Error detected: %s'%e)
-	return run_safe

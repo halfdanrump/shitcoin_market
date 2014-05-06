@@ -18,4 +18,4 @@ socketio = SocketIO(flapp)
 from redis import Redis
 rcon = Redis()
 
-import forms, views, eventhandlers, market, testing
+import forms, views, eventhandlers, market, testing, utils

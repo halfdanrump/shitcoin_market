@@ -19,7 +19,7 @@ from datetime import datetime
 from redis import Redis
 import time
 import json
-
+from app.utils import prefixed
 
 class Orderbook():
 
@@ -55,7 +55,7 @@ class Orderbook():
 		""" The daemon that listens for incoming orders. Must be run in a separate process. """
 		while True:
 			logger.debug('Waiting for orders...')
-			order_form_data = self.redis.blpop(self.ID)
+			order_form_data = self.redis.blpop(prefixed(self.ID))
 			order_form_data = loads(order_form_data[1])
 			new_order = Order(**order_form_data)
 			try:
