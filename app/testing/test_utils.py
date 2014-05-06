@@ -6,8 +6,7 @@ def clear_redis_keys(setup_func):
 	Decorator to clear redis keys before tests. Apply this decorator to the setUp method of a test class.
 	"""
 	def with_redis_initialization(test_class):
-		flapp.config.from_object('app.config.app_config.TestConfig')
-		
+				
 		print 'Clearing database for environmet %s'%flapp.config['REDIS_PREFIX']
 		
 		rcon = Redis()
