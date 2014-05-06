@@ -12,9 +12,6 @@ flapp = Flask(__name__)
 
 flapp.orderbooks = dict()
 
-import config
-flapp.config.from_object(config.app_config)
-
 from flask.ext.socketio import SocketIO
 socketio = SocketIO(flapp)
 

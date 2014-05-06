@@ -4,9 +4,16 @@ from threading import Thread
 # from redis import Redis
 # from multiprocessing import Process
 
-
+import argparse
 if __name__ == "__main__":
     # socketio.redis = Redis()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('--env', required=True, choices('test', 'dev', 'prod'))
+    # args = parser.parse_args()
+
+    # if args.env == 'test':
+    #     flapp.config.from_object('app.config.app_config.TestConfig)
+
     book = Orderbook()
     flapp.book = book
     flapp.orderbooks[book.ID] = book

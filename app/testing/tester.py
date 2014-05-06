@@ -1,3 +1,6 @@
+import unittest
+from app import flapp
+
 active = list()
 
 def run_tests():
@@ -11,11 +14,8 @@ class FocusDecorator(object):
     def __call__(self):
         print '(focus = True) ' + self.test.__name__
 
-from orderbook import *
 
-# @FocusDecorator
-# def test1():
-# 	print 'Running test 1'		
+from orderbook import *
 
 if __name__ == "__main__":
 	print 'active'
