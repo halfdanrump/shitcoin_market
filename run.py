@@ -20,6 +20,9 @@ if __name__ == "__main__":
     elif args.env == 'prod':
         flapp.config.from_object('app.config.app_config.DevelopmentConfig')
     
+    from app.dbase.dbutils import init_db
+    init_db(flapp)
+    
     book = Orderbook()
     flapp.book = book
     flapp.orderbooks[book.ID] = book

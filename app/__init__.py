@@ -7,11 +7,13 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+logger.info('\n\n#################Starting server!#################\n')
+
 from flask import Flask
 flapp = Flask(__name__)
 
 from flask.ext.sqlalchemy import SQLAlchemy
-db = SQLAlchemy(flapp)
+db = SQLAlchemy()
 
 flapp.orderbooks = dict()
 
@@ -21,4 +23,4 @@ socketio = SocketIO(flapp)
 from redis import Redis
 rcon = Redis()
 
-import forms, views, eventhandlers, market, testing, utils, db
+import forms, views, eventhandlers, market, testing, utils, dbase

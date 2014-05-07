@@ -28,9 +28,8 @@ class Orderbook():
 		self.buy_orders = list()
 		self.sell_orders = list()
 		self.redis = Redis()
-		logger.info('ORDERBOOK INITIALIZED: %s'%self.ID)
-		
-		
+		logger.info('Initializing orderbook: %s'%self.ID)
+				
 	
 	def start_auction(self):
 		""" Run this to start the auction. If the auction is already running, nothing happens"""

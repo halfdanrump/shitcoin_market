@@ -9,17 +9,17 @@ class TestConfig(BaseConfig):
 	DEBUG = True
 	REDIS_PREFIX = 'test'
 	PSQL_DATABASE = 'shitcoin_test'
-	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan@localhost/shitcoint_test"
+	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan@localhost/shitcoin_test"
 	LOGFILE = ''
 
 class DevelopmentConfig(BaseConfig):
 	DEBUG = True
 	REDIS_PREFIX = 'development'
 	PSQL_DATABASE = 'shitcoin_dev'
-	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan@localhost/shitcoint_dev"
+	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan@localhost/shitcoin_dev"
 
 class ProductionConfig(BaseConfig):
 	DEBUG = False
 	REDIS_PREFIX = 'production'
 	PSQL_DATABASE = 'shitcoin_prod'
-	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan@localhost/shitcoint_prod"
+	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan@localhost/shitcoin_prod"
