@@ -13,7 +13,7 @@ from flask import Flask
 flapp = Flask(__name__)
 
 from flask.ext.sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
+db = SQLAlchemy(flapp)
 
 flapp.orderbooks = dict()
 

@@ -1,4 +1,10 @@
 import os
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+# SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+# SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
+
 class BaseConfig():
 	SRF_ENABLED = True
 	SECRET_KEY = os.urandom(16)
@@ -9,17 +15,17 @@ class TestConfig(BaseConfig):
 	DEBUG = True
 	REDIS_PREFIX = 'test'
 	PSQL_DATABASE = 'shitcoin_test'
-	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan@localhost/shitcoin_test"
+	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan:halfdan@localhost/shitcoin_test"
 	LOGFILE = ''
 
 class DevelopmentConfig(BaseConfig):
 	DEBUG = True
 	REDIS_PREFIX = 'development'
 	PSQL_DATABASE = 'shitcoin_dev'
-	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan@localhost/shitcoin_dev"
+	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan:halfdan@localhost/shitcoin_dev"
 
 class ProductionConfig(BaseConfig):
 	DEBUG = False
 	REDIS_PREFIX = 'production'
 	PSQL_DATABASE = 'shitcoin_prod'
-	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan@localhost/shitcoin_prod"
+	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan:halfdan@localhost/shitcoin_prod"

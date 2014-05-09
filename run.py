@@ -1,5 +1,6 @@
 from app import flapp, socketio, logger
 from app.market.orderbook import Orderbook
+from app.config.app_config import TestConfig, DevelopmentConfig, ProductionConfig
 from threading import Thread
 # from redis import Redis
 # from multiprocessing import Process
@@ -14,14 +15,12 @@ if __name__ == "__main__":
     logger.info('Starting Flask app in %s environment'%args.env)
 
     if args.env == 'test':
-        flapp.config.from_object('app.config.app_config.TestConfig')
+        configuration = TestConfig()
     elif args.env == 'dev':
-        flapp.config.from_object('app.config.app_config.DevelopmentConfig')
+        configuration = DevelopmentConfig()
     elif args.env == 'prod':
-        flapp.config.from_object('app.config.app_config.DevelopmentConfig')
-    
-    from app.dbase.dbutils import init_db
-    init_db(flapp)
+        configuration = ProductionConfig()
+    flapp.config.from_object(configuration)
     
     book = Orderbook()
     flapp.book = book
