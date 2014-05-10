@@ -1,5 +1,5 @@
 from app.testing.orderbook import BasicOrderbookTests
-from app import flapp
+from app import flapp, db
 import unittest
 
 if __name__ == "__main__":

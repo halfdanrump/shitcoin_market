@@ -10,7 +10,7 @@ def get_random_order(**kwargs):
 	else:
 		side = Order.SELL
 	received = datetime.utcnow()
-	order_args = {'volume':volume, 'price':price, 'type':Order.LIMIT, 'side':side, 'received':received}
+	order_args = {'volume':volume, 'price':price, 'order_type':Order.LIMIT, 'side':side, 'received':received}
 	order_args.update(kwargs)
 	order = Order(**order_args)
 	return order
@@ -29,7 +29,7 @@ def verify_order_data(order_data):
 		return False, 'Price and volume must be a number'
 	except Exception, e:
 		logger.exception(e)
-	if order_data['type'] != Order.LIMIT and order_data['type'] != Order.MARKET:
+	if order_data['order_type'] != Order.LIMIT and order_data['type'] != Order.MARKET:
 		return False, 'Order type must be either LIMIT or MARKET'
 	if order_data['side'] != Order.BUY and order_data['side'] != Order.SELL:
 		return False, 'Order must be either BUY or SELL order'

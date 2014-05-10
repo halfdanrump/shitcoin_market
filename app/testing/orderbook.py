@@ -1,5 +1,5 @@
 import unittest
-from test_utils import clear_redis_keys
+from test_utils import clear_redis_keys, init_db
 from app.market.orderbook import Orderbook
 from app.market.messages import Order
 from app.market.utils import get_random_order
@@ -8,9 +8,11 @@ class BasicOrderbookTests(unittest.TestCase):
 	"""
 	Basic tests for adding and removing orders
 	"""	
+	@init_db
 	@clear_redis_keys
 	def setUp(self):
-		print 'Create books and orders etc...'
+		print
+		print 'Create books and orders etc.'
 		self.book = Orderbook()
 
 	def test_order_match_1(self):
