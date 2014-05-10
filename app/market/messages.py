@@ -3,6 +3,7 @@ from pprint import pprint
 import functools
 from uuid import uuid4
 import json
+from app import db
 
 
 class BaseMessage():
@@ -10,15 +11,23 @@ class BaseMessage():
 		self._integerAttributes = ['price', 'volume']
 		self._allowedAttributes = ['owner', 'received']
 		self._allowedAttributes += list(subclass_attributes)
-		self.__dict__.update(dict(map(lambda key: (key, kwargs.get(key, None)), self._allowedAttributes)))
+		self._set_fields(**kwargs)	
 		self.created_at = datetime.utcnow()
-		print map(lambda attr: getattr(self, attr), self._integerAttributes)
-		map(lambda attr: setattr(self, attr, int(getattr(self, attr))), self._integerAttributes)
+		self._init_integer_fields()
 		
 
 	def __repr__(self):
 		return repr(self.__dict__)
 
+	# def __getattr__(self, attr):
+	# 	return 
+
+	def _init_integer_fields(self):
+		for attr in self._integerAttributes: setattr(self, attr, int(getattr(self, attr)))
+
+	def _set_fields(self, **kwargs):
+		self.__dict__.update(dict(map(lambda key: (key, kwargs.get(key, None)), self._allowedAttributes)))
+	
 	def get_json(self):
 		data = self.get_attributes()
 		data['received'] = data['received'].strftime('%Y-%m-%d-%H:%M')
@@ -50,7 +59,6 @@ class Order(BaseMessage):
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
 	
 	def breed(self, child_volume):
-		print self.get_attributes()
 		child = Order(**self.get_attributes())
 		# map(lambda attr: setattr(child, attr, getattr(self, attr)), self._allowedAttributes)
 		child.volume = child_volume
