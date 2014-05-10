@@ -65,8 +65,8 @@ class Order(BaseMessage):
 
 	def __init__(self, **kwargs):
 		BaseMessage.__init__(self, self._settable_order_attributes, **kwargs)
-		db.session.add(DBOrder(**self.get_attributes()))
-		db.session.commit()
+		# db.session.add(DBOrder(**self.get_attributes()))
+		# db.session.commit()
 	
 	def breed(self, child_volume):
 		child = Order(**self.get_attributes())
