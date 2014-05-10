@@ -1,6 +1,6 @@
 from app import db
 
-class Order(db.Model):
+class DBOrder(db.Model):
 	id = db.Column( db.Integer, primary_key = True )
 	uuid = db.Column( db.String(32), unique = True )
 	price = db.Column( db.Integer )

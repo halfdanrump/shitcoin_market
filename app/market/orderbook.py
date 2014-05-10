@@ -24,37 +24,37 @@ from app.utils import prefixed
 class Orderbook():
 
 	def __init__(self):
-		self.ID = 'book_1' # + uuid4().hex
+		self.uuid = 'book_1' # + uuid4().hex
 		self.buy_orders = list()
 		self.sell_orders = list()
 		self.redis = Redis()
-		logger.info('Initializing orderbook: %s'%self.ID)
+		logger.info('Initializing orderbook: %s'%self.uuid)
 				
 	
 	def start_auction(self):
 		""" Run this to start the auction. If the auction is already running, nothing happens"""
 		if not hasattr(self, 'daemon'):
-			self.daemon = multiprocessing.Process(name = 'auction_%s'%self.ID, target = self.queue_daemon)		
+			self.daemon = multiprocessing.Process(name = 'auction_%s'%self.uuid, target = self.queue_daemon)		
 			self.daemon.start()
-			logger.info('Started auction for book %s'%self.ID)
+			logger.info('Started auction for book %s'%self.uuid)
 		else:
-			logger.info('Auction is already running at book %s'%self.ID)
+			logger.info('Auction is already running at book %s'%self.uuid)
 
 	
 	def stop_auction(self):
 		if hasattr(self, 'daemon'):
 			self.daemon.terminate()
 			del self.daemon
-			logger.info('Terminated auction at book %s'%self.ID)
+			logger.info('Terminated auction at book %s'%self.uuid)
 		else:
-			logger.info('Cannot stop auction that is not already running at book %s'%self.ID)
+			logger.info('Cannot stop auction that is not already running at book %s'%self.uuid)
 
 	
 	def queue_daemon(self, rv_ttl=500):
 		""" The daemon that listens for incoming orders. Must be run in a separate process. """
 		while True:
 			logger.debug('Waiting for orders...')
-			order_form_data = self.redis.blpop(prefixed(self.ID))
+			order_form_data = self.redis.blpop(prefixed(self.uuid))
 			order_form_data = loads(order_form_data[1])
 			new_order = Order(**order_form_data)
 			try:
@@ -68,7 +68,7 @@ class Orderbook():
 		logger.info('Processing order: %s'%new_order)
 		while True:
 			if new_order.volume == 0:
-				logger.debug('Order volume depleted: %s'%new_order.ID)
+				logger.debug('Order volume depleted: %s'%new_order.uuid)
 				break
 
 			matching_order = self.get_matching_order(new_order)

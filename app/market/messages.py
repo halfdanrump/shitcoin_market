@@ -4,6 +4,7 @@ import functools
 from uuid import uuid4
 import json
 from app import db
+from app.dbase.models import DBOrder
 
 
 class BaseMessage():
@@ -14,7 +15,7 @@ class BaseMessage():
 		self._set_fields(**kwargs)	
 		self.created_at = datetime.utcnow()
 		self._init_integer_fields()
-		
+		# test = DBOrder(**kwargs)
 
 	def __repr__(self):
 		return repr(self.__dict__)
@@ -53,7 +54,7 @@ class Order(BaseMessage):
 	MARKET = 'market'
 	
 	def __init__(self, **kwargs):
-		self.ID = uuid4()
+		self.uuid = uuid4()
 		self.created_at = datetime.utcnow()
 		self._allowedAttributes = ['price', 'volume', 'type', 'side']
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
@@ -96,4 +97,4 @@ class Order(BaseMessage):
 		return self.price > other_order.price
 
 	def __repr__(self):
-		return str(dict(map(lambda x: (x, getattr(self, x)), self._allowedAttributes)))
+		return str(dict(map(lambda attr: (attr, getattr(self, attr)), self._allowedAttributes)))

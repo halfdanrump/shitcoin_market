@@ -1,4 +1,4 @@
-from app import flapp, socketio, logger
+from app import flapp, socketio, logger, db
 from app.market.orderbook import Orderbook
 from app.config.app_config import TestConfig, DevelopmentConfig, ProductionConfig
 from threading import Thread
@@ -20,11 +20,13 @@ if __name__ == "__main__":
         configuration = DevelopmentConfig()
     elif args.env == 'prod':
         configuration = ProductionConfig()
+    
     flapp.config.from_object(configuration)
+    db.create_all()
     
     book = Orderbook()
     flapp.book = book
-    flapp.orderbooks[book.ID] = book
+    flapp.orderbooks[book.uuid] = book
     Thread(target=book.queue_daemon).start()
     socketio.run(flapp, host = '127.0.0.1', port = 5000)
 	# app.redis = Redis()
