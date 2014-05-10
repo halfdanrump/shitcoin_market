@@ -9,12 +9,14 @@ from app.dbase.models import DBOrder
 
 class BaseMessage():
 	def __init__(self, *subclass_attributes, **kwargs):
+		self.created_at = datetime.utcnow()
+		self.uuid = uuid4()
 		self._integerAttributes = ['price', 'volume']
 		self._allowedAttributes = ['owner', 'received']
 		self._allowedAttributes += list(subclass_attributes)
 		self._set_fields(**kwargs)	
-		self.created_at = datetime.utcnow()
 		self._init_integer_fields()
+		print self.get_attributes()
 		# test = DBOrder(**kwargs)
 
 	# def __repr__(self):
@@ -58,8 +60,6 @@ class Order(BaseMessage):
 	MARKET = 'market'
 	
 	def __init__(self, **kwargs):
-		self.uuid = uuid4()
-		self.created_at = datetime.utcnow()
 		self._allowedAttributes = ['price', 'volume', 'type', 'side']
 		BaseMessage.__init__(self, *self._allowedAttributes, **kwargs)
 	
