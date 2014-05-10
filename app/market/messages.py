@@ -17,9 +17,13 @@ class BaseMessage():
 		self._init_integer_fields()
 		# test = DBOrder(**kwargs)
 
-	def __repr__(self):
-		return repr(self.__dict__)
+	# def __repr__(self):
+	# 	return repr(self.__dict__)
+	def get_attributes(self):
+		return dict(map(lambda attr: (attr, getattr(self, attr)), self._allowedAttributes))
 
+	def __repr__(self):
+		return str(self.get_attributes())
 	# def __getattr__(self, attr):
 	# 	return 
 
@@ -84,9 +88,6 @@ class Order(BaseMessage):
 	def is_cheaper(self, other_order):
 		if self.price < other_order.price: return True
 
-	def get_attributes(self):
-		return dict(map(lambda attr: (attr, getattr(self, attr)), self._allowedAttributes))
-
 	def get_details(self):
 		return '%s order for %s shares at price %s'%(self.side, self.volume, self.price)
 
@@ -96,5 +97,4 @@ class Order(BaseMessage):
 	def __gt__(self, other_order):
 		return self.price > other_order.price
 
-	def __repr__(self):
-		return str(dict(map(lambda attr: (attr, getattr(self, attr)), self._allowedAttributes)))
+	
