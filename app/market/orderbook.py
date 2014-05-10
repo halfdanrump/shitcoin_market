@@ -11,7 +11,6 @@ from bisect import insort
 ### Logging setup
 
 
-from app.market.messages import Order, Transaction
 
 from app import eventhandlers
 from app import logger
@@ -20,6 +19,7 @@ from redis import Redis
 import time
 import json
 from app.utils import prefixed
+from app.dbase.models import Order
 
 class Orderbook():
 

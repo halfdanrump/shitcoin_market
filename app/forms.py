@@ -1,7 +1,7 @@
 from flask_wtf import Form
 from wtforms import IntegerField, SelectField, RadioField
 from wtforms.validators import Required
-from market.messages import Order
+from app.dbase.models import Order
 
 class OrderForm(Form):
 	price = IntegerField(label = 'price', validators = [Required()])

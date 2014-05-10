@@ -7,7 +7,7 @@ import functools
 from datetime import datetime
 
 @functools.total_ordering
-class DBOrder(db.Model):
+class Order(db.Model):
 
 	BUY = 'buy'
 	SELL = 'sell'
@@ -53,7 +53,7 @@ class DBOrder(db.Model):
 		
 		child_dict = dict(map(lambda attr: (attr, getattr(self, attr)), self._breeding_attributes))
 		child_dict.update({'volume': child_volume, 'uuid': uuid4().hex})
-		return DBOrder(**child_dict)
+		return Order(**child_dict)
 
 	def is_sell(self):
 		if self.side == self.SELL: return True

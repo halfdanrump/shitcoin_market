@@ -1,7 +1,7 @@
 import unittest
 from test_utils import clear_redis_keys, init_db
 from app.market.orderbook import Orderbook
-from app.market.messages import Order
+from app.dbase.models import Order
 from app.market.utils import get_random_order
 
 class BasicOrderbookTests(unittest.TestCase):

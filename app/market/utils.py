@@ -1,7 +1,6 @@
-from app.market.messages import Order
 from datetime import datetime
 import random
-from app.dbase.models import DBOrder
+from app.dbase.models import Order
 
 def get_random_order(**kwargs):
 	volume = round(abs(random.gauss(100, 30)))
@@ -13,7 +12,7 @@ def get_random_order(**kwargs):
 	received = datetime.utcnow()
 	order_args = {'volume':volume, 'price':price, 'order_type':Order.LIMIT, 'side':side, 'received':received}
 	order_args.update(kwargs)
-	order = DBOrder(**order_args)
+	order = Order(**order_args)
 	return order
 
 
