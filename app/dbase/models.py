@@ -7,7 +7,21 @@ import functools
 from datetime import datetime
 
 
+# family_table = db.Table('family', db.metadata,
+# 	db.Column('parent_id', db.Integer, db.ForeignKey('parent.id')),
+# 	db.Column('child_id', db.Integer, db.ForeignKey('child.id'))
+# 	)
 
+# class Parent(db.Model):
+# 	id = db.Column( db.Integer, primary_key = True )
+# 	children = db.relationship( 'Child', secondary = family_table, backref = 'parents' )
+
+# class Child(db.Model):
+# 	id = db.Column( db.Integer, primary_key = True )
+# 	# father_id = db.Column( db.Integer, db.ForeignKey('parent.id'))
+# 	# father = db.relationship( 'Parent', foreign_keys = father_id )
+# 	# mother_id = db.Column( db.Integer, db.ForeignKey('parent.id'))
+# 	# mother = db.relationship( 'Parent', foreign_keys = mother_id )
 
 
 
@@ -20,7 +34,7 @@ class Transaction(db.Model):
 	buy_order_id = db.Column( db.Integer, db.ForeignKey('order.id') )
 	buy_order = db.relationship( 'Order', foreign_keys = buy_order_id)
 	sell_order_id = db.Column( db.Integer, db.ForeignKey('order.id') )
-	sell_order = db.relationship( 'Order', foreign_keys = sell_order_id )
+	sell_order = db.relationship( 'Order', foreign_keys = sell_order_id)
 	
 	
 	
@@ -36,6 +50,17 @@ class Transaction(db.Model):
 			self.sell_order = order1
 		else:
 			raise Exception
+
+class User(db.Model):
+	"""
+	Has bidirectional one-to-many relationship with Orders
+	Has one-way relationship with Transactions
+	"""
+	id = db.Column( db.Integer, primary_key = True )
+	name = db.Column( db.String(100) )
+	email = db.Column( db.String(100) )
+	orders = db.relationship( 'Order', lazy = 'dynamic', backref = 'user')
+	transactions = db.relationship( 'Order', lazy = 'dynamic', backref = 'user')
 
 
 @functools.total_ordering
@@ -57,8 +82,12 @@ class Order(db.Model):
 	received = db.Column ( db.DateTime )
 	order_type = db.Column( db.String(length = 6) )
 	side = db.Column( db.String(length = 4) )
-	owner = db.Column( db.String(length = 32) )
-	transactions = db.relationship( 'Transaction' )
+	owner = db.Column( db.Integer, db.ForeignKey('user.id'))
+	# owner = db.Column( db.String(length = 32) )
+
+	# transactions = db.relationship( 'Transaction' backref = db.backref(''))
+ #    __table_args__ = (ForeignKeyConstraint([cid, uid], [Parent.cid, Parent.uid]), {})
+
 
 	def __init__(self, **kwargs):
 		self.uuid = uuid4().hex
@@ -71,7 +100,7 @@ class Order(db.Model):
 			self.lag = self.created_at - self.received
 		if kwargs.has_key('order_type'): self.order_type = kwargs['order_type']
 		if kwargs.has_key('side'): self.side = kwargs['side']
-		if kwargs.has_key('owner'): self.owner = kwargs['owner']
+		# if kwargs.has_key('owner'): self.owner = kwargs['owner']
 
 	def __repr__(self):
 		c = deepcopy(self.__dict__)
@@ -112,15 +141,6 @@ class Order(db.Model):
 
 
 
-# class User(db.Model):
-# 	"""
-# 	Has bidirectional one-to-many relationship with Orders
-# 	Has one-way relationship with Transactions
-# 	"""
-# 	id = db.Column( db.Integer, primary_key = True )
-# 	name = db.Column( db.String(100) )
-# 	email = db.Column( db.String(100) )
-# 	orders = db.relationship( 'Order', lazy = 'dynamic', backref = 'user')
 
 
 
