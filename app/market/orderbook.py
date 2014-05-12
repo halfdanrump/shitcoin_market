@@ -20,6 +20,7 @@ import time
 import json
 from app.utils import prefixed
 from app.dbase.models import Order
+from app import db
 
 class Orderbook():
 
@@ -51,18 +52,27 @@ class Orderbook():
 
 	
 	def queue_daemon(self, rv_ttl=500):
-		""" The daemon that listens for incoming orders. Must be run in a separate process. """
+		""" 
+		The daemon that listens for incoming orders. Must be run in a separate process. 
+		All received orders are stored in the database
+		"""
 		while True:
 			logger.debug('Waiting for orders...')
 			order_form_data = self.redis.blpop(prefixed(self.uuid))
 			order_form_data = loads(order_form_data[1])
 			new_order = Order(**order_form_data)
+			self.store_order(new_order)
 			try:
 				response = self.process_order(new_order)
 				logger.debug('Finished processing order.')
 			except Exception, e:
 				logger.exception(e)
 				response = e
+
+	def store_order(self, new_order):
+		logger.debug('Committing order %s to database'%new_order)
+		db.session.add(new_order)
+		db.session.commit()
 
 	def process_order(self, new_order):
 		logger.info('Processing order: %s'%new_order)
@@ -75,12 +85,11 @@ class Orderbook():
 			
 			logger.debug('Matching order: %s'%matching_order)
 			if matching_order == None:
-				self.add_order(new_order)
+				self.add_order_to_auction(new_order)
 				break
 			else:
-				child_new, child_matching = self.execute_transaction(new_order, matching_order)
-				new_order = child_new #This is sort of clumsy, but it will do for now.
-				self.add_order(child_matching)
+				new_order, child_matching = self.execute_transaction(new_order, matching_order)
+				self.add_order_to_auction(child_matching)
 			logger.debug('Standing orders: %s, %s'%(len(self.buy_orders), len(self.sell_orders)))
 		logger.debug('Finished processing orders')
 		eventhandlers.transmit_book_to_client(self)
@@ -97,7 +106,7 @@ class Orderbook():
 			return None
 			
 		
-	def add_order(self, new_order):
+	def add_order_to_auction(self, new_order):
 		if new_order.volume > 0:
 			if new_order.is_limit():
 				if new_order.is_buy():
@@ -112,7 +121,8 @@ class Orderbook():
 		transaction_volume = min( new_order.volume, matching_order.volume )
 		child_new = new_order.breed( new_order.volume - transaction_volume )
 		child_matching = matching_order.breed( matching_order.volume - transaction_volume )
-		# transaction = Transaction()
+		
+		# transaction = Transaction(child_new, child_matching, transaction_volume)
 		# eventhandlers.transmit_transaction(transaction.get_json())
 		return child_new, child_matching
 

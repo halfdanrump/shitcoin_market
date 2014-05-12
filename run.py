@@ -23,7 +23,7 @@ if __name__ == "__main__":
     
     flapp.config.from_object(configuration)
     db.create_all()
-    
+    print flapp.config    
     book = Orderbook()
     flapp.book = book
     flapp.orderbooks[book.uuid] = book

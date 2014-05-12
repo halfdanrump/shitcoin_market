@@ -6,6 +6,38 @@ import json
 import functools
 from datetime import datetime
 
+
+
+
+
+
+class Transaction(db.Model):
+	
+	id = db.Column( db.Integer, primary_key = True )
+	# uuid = db.Column( db.String(length = 32), unique = True, primary_key = True )
+	created_at = db.Column( db.DateTime )
+	volume = db.Column( db.Integer )
+	buy_order_id = db.Column( db.Integer, db.ForeignKey('order.id') )
+	buy_order = db.relationship( 'Order', foreign_keys = buy_order_id)
+	sell_order_id = db.Column( db.Integer, db.ForeignKey('order.id') )
+	sell_order = db.relationship( 'Order', foreign_keys = sell_order_id )
+	
+	
+	
+	def __init__(self, order1, order2, transaction_volume):
+		self.created_at = datetime.utcnow()
+		self.volume = transaction_volume
+		self.order = order1
+		if order1.is_buy() and order2.is_sell():
+			self.buy_order = order1
+			self.sell_order = order2
+		elif order1.is_sell() and order2.is_buy():
+			self.buy_order = order2
+			self.sell_order = order1
+		else:
+			raise Exception
+
+
 @functools.total_ordering
 class Order(db.Model):
 
@@ -26,6 +58,7 @@ class Order(db.Model):
 	order_type = db.Column( db.String(length = 6) )
 	side = db.Column( db.String(length = 4) )
 	owner = db.Column( db.String(length = 32) )
+	transactions = db.relationship( 'Transaction' )
 
 	def __init__(self, **kwargs):
 		self.uuid = uuid4().hex
@@ -77,33 +110,6 @@ class Order(db.Model):
 	def __gt__(self, other_order):
 		return self.price > other_order.price
 
-
-
-class Transaction(db.Model):
-	
-	id = db.Column( db.Integer, primary_key = True )
-	# uuid = db.Column( db.String(length = 32), unique = True, primary_key = True )
-	created_at = db.Column( db.DateTime )
-	volume = db.Column( db.Integer )
-	buy_order_id = db.Column( db.Integer, db.ForeignKey('order.id') )
-	buy_order = db.relationship( 'Order', backref = db.backref('transactions', lazy = 'dynamic') )
-	sell_order_id = db.Column( db.Integer, db.ForeignKey('order.id') )
-	sell_order = db.relationship( 'Order', backref = db.backref('transactions', lazy = 'dynamic') )
-	
-	
-	
-	def __init__(self, order1, order2, transaction_volume):
-		self.created_at = datetime.utcnow()
-		self.volume = transaction_volume
-		self.order = order1
-		if order1.is_buy() and order2.is_sell():
-			self.buy_order = order1
-			self.sell_order = order2
-		elif order1.is_sell() and order2.is_buy():
-			self.buy_order = order2
-			self.sell_order = order1
-		else:
-			raise Exception
 
 
 # class User(db.Model):
