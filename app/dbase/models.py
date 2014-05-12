@@ -17,7 +17,7 @@ class Order(db.Model):
 	_breeding_attributes = ['price', 'received', 'order_type', 'side', 'owner']
 
 	id = db.Column( db.Integer, primary_key = True )
-	uuid = db.Column( db.String(length = 32), unique = True, primary_key = True )
+	# uuid = db.Column( db.String(length = 32), unique = True, primary_key = True )
 	created_at = db.Column ( db.DateTime )
 	lag = received = db.Column ( db.Interval )
 	price = db.Column( db.Integer )
@@ -77,5 +77,63 @@ class Order(db.Model):
 	def __gt__(self, other_order):
 		return self.price > other_order.price
 
-# class DBTransaction(db.Model):
-# 	pass
+
+
+class Transaction(db.Model):
+	
+	id = db.Column( db.Integer, primary_key = True )
+	# uuid = db.Column( db.String(length = 32), unique = True, primary_key = True )
+	created_at = db.Column( db.DateTime )
+	volume = db.Column( db.Integer )
+	buy_order_id = db.Column( db.Integer, db.ForeignKey('order.id') )
+	buy_order = db.relationship( 'Order', backref = db.backref('transactions', lazy = 'dynamic') )
+	sell_order_id = db.Column( db.Integer, db.ForeignKey('order.id') )
+	sell_order = db.relationship( 'Order', backref = db.backref('transactions', lazy = 'dynamic') )
+	
+	
+	
+	def __init__(self, order1, order2, transaction_volume):
+		self.created_at = datetime.utcnow()
+		self.volume = transaction_volume
+		self.order = order1
+		if order1.is_buy() and order2.is_sell():
+			self.buy_order = order1
+			self.sell_order = order2
+		elif order1.is_sell() and order2.is_buy():
+			self.buy_order = order2
+			self.sell_order = order1
+		else:
+			raise Exception
+
+
+# class User(db.Model):
+# 	"""
+# 	Has bidirectional one-to-many relationship with Orders
+# 	Has one-way relationship with Transactions
+# 	"""
+# 	id = db.Column( db.Integer, primary_key = True )
+# 	name = db.Column( db.String(100) )
+# 	email = db.Column( db.String(100) )
+# 	orders = db.relationship( 'Order', lazy = 'dynamic', backref = 'user')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
