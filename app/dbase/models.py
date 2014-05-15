@@ -33,20 +33,60 @@ from datetime import datetime
 # 	mother_id = db.Column( db.Integer, db.ForeignKey('parent.id'))
 # 	mother = db.relationship( 'Parent', foreign_keys = mother_id )
 
+transaction_user_association = db.Table('transaction_user_association', db.metadata,
+		db.Column( 'user_id', db.Integer, db.ForeignKey('users.id')),
+		db.Column( 'transaction_id', db.Integer, db.ForeignKey('transactions.id'))
+	)
+
+transaction_order_association = db.Table('transaction_order_association', db.metadata,
+		db.Column( 'order_id', db.Integer, db.ForeignKey('orders.id')),
+		db.Column( 'transaction_id', db.Integer, db.ForeignKey('transactions.id'))
+	)
 
 
-class Transaction(db.Model):
+class AutoCommit():
+	def __init__(self, db_object):
+		self.db_object = db_object
+		print 'in decorator init'
+
+	def __call__(self):
+		instance = self.db_object()
+		db.session.add(instance)
+		db.session.commit()
+		
+
+@AutoCommit
+class User(db.Model):
+	"""
+	Has bidirectional one-to-many relationship with Orders
+	Has one-way relationship with Transactions
+	"""
+	__tablename__ = 'users'
+	id = db.Column( db.Integer, primary_key = True )
+	name = db.Column( db.String(100) )
+	email = db.Column( db.String(100) )
+	orders = db.relationship( 'Order', backref = 'owner', lazy = 'dynamic')
+	transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')
+
 	
+	def __init__(self):
+		print 'in user init'
+
+@AutoCommit
+class Transaction(db.Model):
+	__tablename__ = 'transactions'
 	id = db.Column( db.Integer, primary_key = True )
 	# uuid = db.Column( db.String(length = 32), unique = True, primary_key = True )
 	created_at = db.Column( db.DateTime )
 	volume = db.Column( db.Integer )
-	# buy_order_id = db.Column( db.Integer, db.ForeignKey('order.id') )
-	# buy_order = db.relationship( 'Order', foreign_keys = buy_order_id)
-	# sell_order_id = db.Column( db.Integer, db.ForeignKey('order.id') )
-	# sell_order = db.relationship( 'Order', foreign_keys = sell_order_id)
+
+	buy_order = db.relationship( 'Order', secondary = transaction_order_association, uselist = False, back_populates = 'transactions')
+	sell_order = db.relationship( 'Order', secondary = transaction_order_association, uselist = False, back_populates = 'transactions')
+	buyer = db.relationship( 'User', secondary = transaction_user_association, uselist = False, back_populates = 'transactions')
+	seller = db.relationship( 'User', secondary = transaction_user_association, uselist = False, back_populates = 'transactions')
 	
-	
+
+	# __table_args__ = (db.ForeignKeyConstraint([buyer_id], ['user.id']), {})
 	
 	def __init__(self, order1, order2, transaction_volume):
 		self.created_at = datetime.utcnow()
@@ -54,28 +94,22 @@ class Transaction(db.Model):
 		self.order = order1
 		if order1.is_buy() and order2.is_sell():
 			self.buy_order = order1
+			self.buyer = order1.owner
 			self.sell_order = order2
+			self.seller = order2.owner
 		elif order1.is_sell() and order2.is_buy():
 			self.buy_order = order2
+			self.buyer = order2.owner
 			self.sell_order = order1
+			self.seller = order1.owner
 		else:
 			raise Exception
 
-class User(db.Model):
-	"""
-	Has bidirectional one-to-many relationship with Orders
-	Has one-way relationship with Transactions
-	"""
-	id = db.Column( db.Integer, primary_key = True )
-	name = db.Column( db.String(100) )
-	email = db.Column( db.String(100) )
-	orders = db.relationship( 'Order' )
-	# transactions = db.relationship( 'Transaction', lazy = 'dynamic', backref = 'owner')
 
-
+@AutoCommit
 @functools.total_ordering
 class Order(db.Model):
-
+	__tablename__ = 'orders'
 	BUY = 'buy'
 	SELL = 'sell'
 	LIMIT = 'limit'
@@ -92,8 +126,9 @@ class Order(db.Model):
 	received = db.Column ( db.DateTime )
 	order_type = db.Column( db.String(length = 6) )
 	side = db.Column( db.String(length = 4) )
-	owner_id = db.Column( db.Integer, db.ForeignKey('user.id'))
-	owner = db.relationship( 'User' )
+	
+	owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+	transactions = db.relationship( 'Transaction', secondary = transaction_order_association, lazy = 'dynamic')
 
 	# usasr_id = db.Column( db.Integer, db.ForeignKey('user.id'))
 	# owner = db.Column( db.String(length = 32) )
@@ -121,7 +156,10 @@ class Order(db.Model):
 		if c.has_key('received'): 
 			c['received'] = c['received'].strftime('%Y-%m-%d-%H:%M')
 			c['lag'] = c['lag'].total_seconds()
-		c.pop('_sa_instance_state')
+		try:
+			c.pop('_sa_instance_state')
+		except KeyError:
+			pass
 		return json.dumps(c)
 
 	def breed(self, child_volume):
