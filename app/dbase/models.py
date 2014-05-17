@@ -7,32 +7,6 @@ import functools
 from datetime import datetime
 
 
-# family_table = db.Table('family', db.metadata,
-# 	db.Column('parent_id', db.Integer, db.ForeignKey('parent.id')),
-# 	db.Column('parent_id', db.Integer, db.ForeignKey('parent.id')),
-# 	db.Column('child_id', db.Integer, db.ForeignKey('child.id'))
-# 	)
-
-# # class Parent(db.Model):
-# # 	id = db.Column( db.Integer, primary_key = True )
-# # 	children = db.relationship( 'Child', secondary = family_table, backref = 'parents' )
-
-# # class Child(db.Model):
-# # 	id = db.Column( db.Integer, primary_key = True )
-
-
-# class Parent(db.Model):
-# 	id = db.Column( db.Integer, primary_key = True )
-# 	children = db.relationship( 'Child', foreign_keys = ['child.father_id', 'child.mother_id'] )
-
-
-# class Child(db.Model):
-# 	id = db.Column( db.Integer, primary_key = True )
-# 	father_id = db.Column( db.Integer, db.ForeignKey('parent.id'))
-# 	father = db.relationship( 'Parent', foreign_keys = father_id )
-# 	mother_id = db.Column( db.Integer, db.ForeignKey('parent.id'))
-# 	mother = db.relationship( 'Parent', foreign_keys = mother_id )
-
 transaction_user_association = db.Table('transaction_user_association', db.metadata,
 		db.Column( 'user_id', db.Integer, db.ForeignKey('users.id')),
 		db.Column( 'transaction_id', db.Integer, db.ForeignKey('transactions.id'))
@@ -76,7 +50,6 @@ class User(db.Model):
 class Transaction(db.Model):
 	__tablename__ = 'transactions'
 	id = db.Column( db.Integer, primary_key = True )
-	# uuid = db.Column( db.String(length = 32), unique = True, primary_key = True )
 	created_at = db.Column( db.DateTime )
 	volume = db.Column( db.Integer )
 
@@ -86,7 +59,7 @@ class Transaction(db.Model):
 	seller = db.relationship( 'User', secondary = transaction_user_association, uselist = False, back_populates = 'transactions')
 	
 
-	# __table_args__ = (db.ForeignKeyConstraint([buyer_id], ['user.id']), {})
+	
 	
 	def __init__(self, order1, order2, transaction_volume):
 		self.created_at = datetime.utcnow()
@@ -118,7 +91,7 @@ class Order(db.Model):
 	_breeding_attributes = ['price', 'received', 'order_type', 'side', 'owner']
 
 	id = db.Column( db.Integer, primary_key = True )
-	# uuid = db.Column( db.String(length = 32), unique = True, primary_key = True )
+	
 	created_at = db.Column ( db.DateTime )
 	lag = received = db.Column ( db.Interval )
 	price = db.Column( db.Integer )
@@ -130,13 +103,7 @@ class Order(db.Model):
 	owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 	transactions = db.relationship( 'Transaction', secondary = transaction_order_association, lazy = 'dynamic')
 
-	# usasr_id = db.Column( db.Integer, db.ForeignKey('user.id'))
-	# owner = db.Column( db.String(length = 32) )
-
-	# transactions = db.relationship( 'Transaction' backref = db.backref(''))
- #    __table_args__ = (ForeignKeyConstraint([cid, uid], [Parent.cid, Parent.uid]), {})
-
-
+	
 	def __init__(self, **kwargs):
 		self.uuid = uuid4().hex
 		self.created_at = datetime.utcnow()
