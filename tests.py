@@ -1,4 +1,5 @@
 from app.testing.orderbook import BasicOrderbookTests
+from app.testing.database import *
 from app import flapp, db
 import unittest
 

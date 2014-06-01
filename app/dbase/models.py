@@ -18,20 +18,19 @@ transaction_order_association = db.Table('transaction_order_association', db.met
 	)
 
 
-def decorator(model):
+def create(model):
 	@staticmethod
-	def create(**kwargs):
-		print model
+	def autoinsert(**kwargs):
 		instance = model(**kwargs)
 		db.session.add(instance)
 		db.session.commit()
 		return instance
-	model.create = create
+	model.create = autoinsert
 	return model
 
 
 
-@decorator
+@create
 class User(db.Model):
 	"""
 	Has bidirectional one-to-many relationship with Orders
@@ -48,7 +47,7 @@ class User(db.Model):
 		if kwargs.has_key('email'): self.email = kwargs['email']
 		print 'In user init'
 
-# @AutoCommit
+@create
 class Transaction(db.Model):
 	__tablename__ = 'transactions'
 	id = db.Column( db.Integer, primary_key = True )
@@ -81,7 +80,7 @@ class Transaction(db.Model):
 			raise Exception
 
 
-# @AutoCommit
+@create
 @functools.total_ordering
 class Order(db.Model):
 	__tablename__ = 'orders'
@@ -158,28 +157,5 @@ class Order(db.Model):
 
 	def __gt__(self, other_order):
 		return self.price > other_order.price
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

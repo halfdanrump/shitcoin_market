@@ -19,7 +19,7 @@ from redis import Redis
 import time
 import json
 from app.utils import prefixed
-from app.dbase.models import Order
+from app.dbase.models import Order, Transaction
 from app import db
 
 class Orderbook():
@@ -123,7 +123,7 @@ class Orderbook():
 		child_matching = matching_order.breed( matching_order.volume - transaction_volume )
 		
 		transaction = Transaction(child_new, child_matching, transaction_volume)
-		eventhandlers.transmit_transaction(transaction.get_json())
+		# eventhandlers.transmit_transaction(transaction.get_json())
 		return child_new, child_matching
 
 	def has_buy_orders(self):

@@ -3,6 +3,7 @@ from test_utils import clear_redis_keys, init_db
 from app.market.orderbook import Orderbook
 from app.dbase.models import Order
 from app.market.utils import get_random_order
+from app import db
 
 class BasicOrderbookTests(unittest.TestCase):
 	"""
@@ -11,8 +12,8 @@ class BasicOrderbookTests(unittest.TestCase):
 	@init_db
 	@clear_redis_keys
 	def setUp(self):
-		print
-		print 'Create books and orders etc.'
+		# print
+		# print 'Create books and orders etc.'
 		self.book = Orderbook()
 
 	def test_order_match_1(self):
@@ -115,3 +116,4 @@ class BasicOrderbookTests(unittest.TestCase):
 		remaining_order = self.book.sell_orders.pop()
 		self.assertTrue(remaining_order.volume == 1)
 		self.assertTrue(remaining_order.price == 10)
+
