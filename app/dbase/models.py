@@ -18,18 +18,20 @@ transaction_order_association = db.Table('transaction_order_association', db.met
 	)
 
 
-class AutoCommit():
-	def __init__(self, db_object):
-		self.db_object = db_object
-		print 'in decorator init'
-
-	def __call__(self):
-		instance = self.db_object()
+def decorator(model):
+	@staticmethod
+	def create(**kwargs):
+		print model
+		instance = model(**kwargs)
 		db.session.add(instance)
 		db.session.commit()
-		
+		return instance
+	model.create = create
+	return model
 
-@AutoCommit
+
+
+@decorator
 class User(db.Model):
 	"""
 	Has bidirectional one-to-many relationship with Orders
@@ -41,12 +43,12 @@ class User(db.Model):
 	email = db.Column( db.String(100) )
 	orders = db.relationship( 'Order', backref = 'owner', lazy = 'dynamic')
 	transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')
+	def __init__(self, **kwargs):
+		if kwargs.has_key('name'): self.name = kwargs['name']
+		if kwargs.has_key('email'): self.email = kwargs['email']
+		print 'In user init'
 
-	
-	def __init__(self):
-		print 'in user init'
-
-@AutoCommit
+# @AutoCommit
 class Transaction(db.Model):
 	__tablename__ = 'transactions'
 	id = db.Column( db.Integer, primary_key = True )
@@ -60,7 +62,7 @@ class Transaction(db.Model):
 	
 
 	
-	
+
 	def __init__(self, order1, order2, transaction_volume):
 		self.created_at = datetime.utcnow()
 		self.volume = transaction_volume
@@ -79,7 +81,7 @@ class Transaction(db.Model):
 			raise Exception
 
 
-@AutoCommit
+# @AutoCommit
 @functools.total_ordering
 class Order(db.Model):
 	__tablename__ = 'orders'

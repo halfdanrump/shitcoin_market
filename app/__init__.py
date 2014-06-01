@@ -1,4 +1,5 @@
 import logging.config, logging.handlers, yaml
+
 logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
 handler = logging.handlers.RotatingFileHandler('orderbook.log', maxBytes = 10**6)
@@ -9,8 +10,13 @@ logger.addHandler(handler)
 
 logger.info('\n\n#################Starting server!#################\n')
 
+
+
 from flask import Flask
 flapp = Flask(__name__)
+
+from app.config.app_config import DevelopmentConfig
+flapp.config.from_object(DevelopmentConfig())
 
 from flask.ext.sqlalchemy import SQLAlchemy
 db = SQLAlchemy(flapp)
@@ -22,6 +28,8 @@ socketio = SocketIO(flapp)
 
 from redis import Redis
 rcon = Redis()
+
+
 
 import views, forms
 # import forms, views, eventhandlers, market, testing, utils, dbase

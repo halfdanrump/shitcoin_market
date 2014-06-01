@@ -8,6 +8,13 @@ On Ubuntu
 $ sudo apt-get install python-psycopg2
 $ sudo apt-get install libpq-dev
 $ sudo apt-get install postgresql postgresql-contrib
+$ sudo su - postgres
+$ psql
+(in postgres shell as postgres role)
+CREATE ROLE halfdan;
+ALTER ROLE halfdan WITH SUPERUSER;
+(in postgres as halfdan role)
+CREATE DATABASE shitcoin_dev;
 
 2. Install redis server
 $ sudo apt-get install redis-server

@@ -8,7 +8,7 @@ from uuid import uuid4
 import multiprocessing
 import heapq
 from bisect import insort
-### Logging setup
+
 
 
 
@@ -122,8 +122,8 @@ class Orderbook():
 		child_new = new_order.breed( new_order.volume - transaction_volume )
 		child_matching = matching_order.breed( matching_order.volume - transaction_volume )
 		
-		# transaction = Transaction(child_new, child_matching, transaction_volume)
-		# eventhandlers.transmit_transaction(transaction.get_json())
+		transaction = Transaction(child_new, child_matching, transaction_volume)
+		eventhandlers.transmit_transaction(transaction.get_json())
 		return child_new, child_matching
 
 	def has_buy_orders(self):
