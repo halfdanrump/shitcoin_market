@@ -12,10 +12,10 @@ transaction_user_association = db.Table('transaction_user_association', db.metad
 		db.Column( 'transaction_id', db.Integer, db.ForeignKey('transactions.id'))
 	)
 
-transaction_order_association = db.Table('transaction_order_association', db.metadata,
-		db.Column( 'order_id', db.Integer, db.ForeignKey('orders.id')),
-		db.Column( 'transaction_id', db.Integer, db.ForeignKey('transactions.id'))
-	)
+# transaction_order_association = db.Table('transaction_order_association', db.metadata,
+# 		db.Column( 'order_id', db.Integer, db.ForeignKey('orders.id')),
+# 		db.Column( 'transaction_id', db.Integer, db.ForeignKey('transactions.id'))
+# 	)
 
 
 def create(model):
@@ -42,7 +42,8 @@ class User(db.Model):
 	email = db.Column( db.String(100) )
 	
 	orders = db.relationship( 'Order', backref = 'owner', lazy = 'dynamic')
-	transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')
+	buy_transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')
+	sell_transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')
 	
 	def __init__(self, **kwargs):
 		if kwargs.has_key('name'): self.name = kwargs['name']
@@ -52,17 +53,17 @@ class User(db.Model):
 		return '<User>id: %s, name: %s, email: %s'%(self.id, self.name, self.email)
 	
 
-# @create
+@create
 class Transaction(db.Model):
 	__tablename__ = 'transactions'
 	id = db.Column( db.Integer, primary_key = True )
 	created_at = db.Column( db.DateTime )
 	volume = db.Column( db.Integer )
 
-	buy_order = db.relationship( 'Order', secondary = transaction_order_association, uselist = False, back_populates = 'transactions')
-	sell_order = db.relationship( 'Order', secondary = transaction_order_association, uselist = False, back_populates = 'transactions')
-	buyer = db.relationship( 'User', secondary = transaction_user_association, uselist = False, back_populates = 'transactions')
-	seller = db.relationship( 'User', secondary = transaction_user_association, uselist = False, back_populates = 'transactions')
+	# buy_order = db.relationship( 'Order', secondary = transaction_order_association, uselist = False, back_populates = 'transactions')
+	# sell_order = db.relationship( 'Order', secondary = transaction_order_association, uselist = False, back_populates = 'transactions')
+	buyer = db.relationship( 'User', secondary = transaction_user_association, uselist = False, back_populates = 'buy_transactions')
+	seller = db.relationship( 'User', secondary = transaction_user_association, uselist = False, back_populates = 'sell_transactions')
 	
 
 	
@@ -112,7 +113,7 @@ class Order(db.Model):
 	side = db.Column( db.String(length = 4) )
 	
 	owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-	transactions = db.relationship( 'Transaction', secondary = transaction_order_association, lazy = 'dynamic')
+	# transactions = db.relationship( 'Transaction', secondary = transaction_order_association, lazy = 'dynamic')
 
 	
 	def __init__(self, **kwargs):
