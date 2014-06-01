@@ -18,3 +18,4 @@ redis==2.9.1
 pyyaml==3.11
 Flask-SQLAlchemy==1.0
 psycopg2==2.5.2
+flask-bootstrap==3.1.1.2
