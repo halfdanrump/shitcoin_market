@@ -20,8 +20,8 @@ transaction_order_association = db.Table('transaction_order_association', db.met
 
 def create(model):
 	@staticmethod
-	def autoinsert(**kwargs):
-		instance = model(**kwargs)
+	def autoinsert(*args, **kwargs):
+		instance = model(*args, **kwargs)
 		db.session.add(instance)
 		db.session.commit()
 		return instance
@@ -66,8 +66,8 @@ class Transaction(db.Model):
 
 	def __init__(self, order1, order2, transaction_volume):
 		self.created_at = datetime.utcnow()
-		self.volume = transaction_volume
-		self.order = order1
+		self.transaction_volume = transaction_volume
+		
 		if order1.is_buy() and order2.is_sell():
 			self.buy_order = order1
 			self.buyer = order1.owner
