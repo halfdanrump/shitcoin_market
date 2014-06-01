@@ -9,7 +9,6 @@ class BasicOrderbookTests(unittest.TestCase):
 	"""
 	Basic tests for adding and removing orders
 	"""	
-	@init_db
 	@clear_redis_keys
 	def setUp(self):
 		# print

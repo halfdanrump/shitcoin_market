@@ -40,12 +40,14 @@ class User(db.Model):
 	id = db.Column( db.Integer, primary_key = True )
 	name = db.Column( db.String(100) )
 	email = db.Column( db.String(100) )
+	
 	orders = db.relationship( 'Order', backref = 'owner', lazy = 'dynamic')
 	transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')
+	
 	def __init__(self, **kwargs):
 		if kwargs.has_key('name'): self.name = kwargs['name']
 		if kwargs.has_key('email'): self.email = kwargs['email']
-		print 'In user init'
+	
 
 @create
 class Transaction(db.Model):
