@@ -47,9 +47,12 @@ class User(db.Model):
 	def __init__(self, **kwargs):
 		if kwargs.has_key('name'): self.name = kwargs['name']
 		if kwargs.has_key('email'): self.email = kwargs['email']
+
+	def __repr__(self):
+		return '<User>id: %s, name: %s, email: %s'%(self.id, self.name, self.email)
 	
 
-@create
+# @create
 class Transaction(db.Model):
 	__tablename__ = 'transactions'
 	id = db.Column( db.Integer, primary_key = True )
@@ -65,6 +68,8 @@ class Transaction(db.Model):
 	
 
 	def __init__(self, order1, order2, transaction_volume):
+		assert isinstance(order1, Order)
+		assert isinstance(order2, Order)
 		self.created_at = datetime.utcnow()
 		self.transaction_volume = transaction_volume
 		
@@ -80,6 +85,9 @@ class Transaction(db.Model):
 			self.seller = order1.owner
 		else:
 			raise Exception
+		
+		print 'buyer:', self.buyer
+		print 'seller:', self.seller
 
 
 @create
@@ -124,13 +132,16 @@ class Order(db.Model):
 		c = deepcopy(self.__dict__)
 		if c.has_key('created_at'): c['created_at'] = c['created_at'].strftime('%Y-%m-%d-%H:%M')
 		if c.has_key('received'): 
-			c['received'] = c['received'].strftime('%Y-%m-%d-%H:%M')
-			c['lag'] = c['lag'].total_seconds()
+			try:
+				c['received'] = c['received'].strftime('%Y-%m-%d-%H:%M')
+				c['lag'] = c['lag'].total_seconds()
+			except AttributeError:
+				pass
 		try:
 			c.pop('_sa_instance_state')
 		except KeyError:
 			pass
-		return json.dumps(c)
+		return str(c)
 
 	def breed(self, child_volume):
 		
