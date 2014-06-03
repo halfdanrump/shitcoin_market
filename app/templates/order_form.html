@@ -1,0 +1,62 @@
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function(){
+    var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');
+    socket.emit('client requests orderbook status')
+
+    socket.on('order validation', function(message){
+      $('div#messages').html(message)
+    });
+
+
+    socket.on('orderbook update', function(book){
+      var b = '<tr><th>Sell volume</th><th>Price</th><th>Buy volume</th></tr>';
+      $.each(jQuery.parseJSON(book['sell_side']), function(index, tuple){
+        b += '<tr><td>' + tuple[1] + '</td><td>' + tuple[0] + '</td><td></td></tr>';
+      });
+      $.each(jQuery.parseJSON(book['buy_side']), function(index, tuple){
+        b += '<tr><td></td><td>' + tuple[0] + '</td><td>' + tuple[1] +'</td></tr>';
+      });
+      $('#orderbook_table').html(b);
+    });
+
+    $('form#new_order').submit(function(event) {
+        var form_data = $('form#new_order').serialize();
+        $('div#last_order').val(form_data);
+        socket.emit('order submitted', {data: form_data});
+        $('form#new_order').each(function(){
+          this.reset();
+        });
+        return false;
+    });
+    // $('#example').dataTable();
+  });
+</script>
+
+
+<form id="new_order" action="#" method="post", name="new_order">
+  {{ order_form.hidden_tag() }}
+  <p>
+    <span>
+      Order price: {{ order_form.price(size = 4)}}
+      Order volume: {{ order_form.volume(size = 4)}}
+    </span>
+  </p>
+  <p>
+    <span>
+      Buy or sell?: {{ order_form.side()}}
+      Order type: {{ order_form.order_type()}}
+    </span>
+  </p>
+  <input type="submit" value="Place order!">
+</form>
+
+<div id="orderbook_data">
+  <table id="orderbook_table">
+    <tr>
+      <th>Sell volume</th>
+      <th>Price</th>
+      <th>Buy volume</th>
+    </tr>
+  </table>
+</div>
+<div id="messages"></div>

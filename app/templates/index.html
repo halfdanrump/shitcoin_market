@@ -1,33 +1,14 @@
 {% extends "base.html" %}
 
-{% block place_order %}
-<p>Click to place random order</p>
-<form action="" method="post", name="new_order">
-  {{ order_form.hidden_tag() }}
-  <p>
-    <span>
-      Order price: {{ order_form.price(size = 4)}}
-      Order volume: {{ order_form.volume(size = 4)}}
-    </span>
-  </p>
-  <p>
-    <span>
-      Buy or sell?: {{ order_form.side()}}
-      Order type: {{ order_form.type()}}
-    </span>
-  </p>
-  <input type="submit" value="Place order!">
-</form>
+{% block head %}
+{% endblock %}
+
+
+{% block index %}
+INDEX
+  
+{% include 'order_form.html' %}
+
 
 {% endblock %}
 
-{% block auction_control %}
-blablabla
-<!-- <form action="/start" method="post">
-  <input type="submit" value="Start auction">
-</form>
-
-<form action="/restart" method="post">
-  <input type="submit" value="Restart auction">
-</form> -->
-{% endblock %}
