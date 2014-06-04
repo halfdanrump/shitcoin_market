@@ -10,6 +10,12 @@
       <script type="text/javascript" src="static/javascript/min/socket.io.min.js"></script>
       <script type="text/javascript" src="static/javascript/min/d3.v3.min.js" charset="utf-8"></script>
       <script type="text/javascript" src="static/javascript/utils.js" charset="utf-8"></script>
+      <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+          var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');
+          socket.emit('client requests orderbook status')
+        });
+      </script>
       {% block head %}{% endblock %}
     </head>
   
