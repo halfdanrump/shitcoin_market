@@ -29,6 +29,9 @@ def order_placed(query_string):
 	except Exception, e:
 		print e
 
+# @socketio('client requests order history')
+# def transmit_order_history_to_use():
+	
 
 @socketio.on('client requests orderbook status', namespace = '/client')
 def transmit_book_to_client(book = None):

@@ -1,5 +1,6 @@
 import logging.config, logging.handlers, yaml
-from flask_bootstrap import Bootstrap
+from config.app_config import basedir
+import os
 
 logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
@@ -16,7 +17,11 @@ logger.info('\n\n#################Starting server!#################\n')
 from flask import Flask
 flapp = Flask(__name__)
 
+from flask_bootstrap import Bootstrap
 Bootstrap(flapp)
+
+from flask.ext.openid import OpenID
+oid = OpenID(flapp, os.path.join(basedir, 'tmp'), safe_roots=[])
 
 from app.config.app_config import DevelopmentConfig
 flapp.config.from_object(DevelopmentConfig())

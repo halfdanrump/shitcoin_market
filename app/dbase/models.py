@@ -87,9 +87,6 @@ class Transaction(db.Model):
 		else:
 			raise Exception
 		
-		print 'buyer:', self.buyer
-		print 'seller:', self.seller
-
 
 @create
 @functools.total_ordering

@@ -15,23 +15,6 @@
   });
 </script>
 
-
-
-<form id="new_order" action="#" method="post", name="new_order">
-  {{ order_form.hidden_tag() }}
-  <p>
-    <span>
-      Order price: {{ order_form.price(size = 4)}}
-      Order volume: {{ order_form.volume(size = 4)}}
-    </span>
-  </p>
-  <p>
-    <span>
-      Buy or sell?: {{ order_form.side()}}
-      Order type: {{ order_form.order_type()}}
-    </span>
-  </p>
-  <input type="submit" value="Place order!">
-</form>
-
-<div id="messages"></div>
+<h2>Order form</h2>
+{% import "bootstrap/wtf.html" as wtf %}
+{{ wtf.quick_form(order_form, method='post', action='#', id='new_order', form_type='horizontal')}}

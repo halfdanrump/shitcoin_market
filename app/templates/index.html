@@ -1,6 +1,7 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/fixes.html" as fixes %}
 
+
 {% block head %}
 {{ super() }}
     <script type="text/javascript" src="static/javascript/min/socket.io.min.js"></script>
@@ -20,6 +21,7 @@
 {% block title %} Shitcoin market {% endblock %}
 
 {% block content %}
+    <div style="height:50px;"></div>
     <div class="container">
         <div class="row">
             <div class="col-lg-4">
@@ -27,6 +29,9 @@
             </div>
             <div class="col-lg-4">
                 {% include 'orderbook_status.html' %}        
+            </div>
+            <div class="col-lg-4">
+                {% include 'order_history.html' %}        
             </div>
         </div>
     </div>

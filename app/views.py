@@ -1,6 +1,6 @@
 from app import flapp, socketio
 from flask import render_template, redirect, flash
-from forms import OrderForm
+from forms import OrderForm, UserLoginForm
 
 
 #book = Orderbook(app)
@@ -9,6 +9,12 @@ from forms import OrderForm
 
 
 @flapp.route('/', methods = ['GET'])
+def login():
+	login_form = UserLoginForm()
+	return render_template("login.html", login_form = login_form)
+
+
+@flapp.route('/home', methods = ['GET'])
 def index():
 	order_form = OrderForm()
 	# if order_form.validate_on_submit():
