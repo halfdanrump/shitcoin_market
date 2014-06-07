@@ -1,15 +1,38 @@
-{% extends "base.html" %}
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/fixes.html" as fixes %}
 
 {% block head %}
+{{ super() }}
+    <script type="text/javascript" src="static/javascript/min/socket.io.min.js"></script>
+    <script type="text/javascript" src="static/javascript/min/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="static/javascript/utils.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+            console.log('asdasdasd');
+            var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');    
+            socket.emit('client requests orderbook status');
+        });
+    </script>
+
+
+{% endblock %}
+
+{% block title %} Shitcoin market {% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                {% include 'order_form.html' %}        
+            </div>
+            <div class="col-lg-4">
+                {% include 'orderbook_status.html' %}        
+            </div>
+        </div>
+    </div>
+    
 {% endblock %}
 
 
-{% block index %}
-INDEX
-  
-{% include 'order_form.html' %}
-{% include 'orderbook_status.html' %}
-
-
+{% block other_scripts %}
 {% endblock %}
-

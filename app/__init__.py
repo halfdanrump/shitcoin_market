@@ -16,13 +16,14 @@ logger.info('\n\n#################Starting server!#################\n')
 from flask import Flask
 flapp = Flask(__name__)
 
-# Bootstrap(flapp)
+Bootstrap(flapp)
 
 from app.config.app_config import DevelopmentConfig
 flapp.config.from_object(DevelopmentConfig())
 
 from flask.ext.sqlalchemy import SQLAlchemy
 db = SQLAlchemy(flapp)
+db.create_all()
 
 flapp.orderbooks = dict()
 

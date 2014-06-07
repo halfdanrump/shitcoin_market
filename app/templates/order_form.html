@@ -2,10 +2,6 @@
   $(document).ready(function(){
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');
 
-    socket.on('order validation', function(message){
-      $('div#messages').html(message)
-    });
-
     $('form#new_order').submit(function(event) {
         var form_data = $('form#new_order').serialize();
         $('div#last_order').val(form_data);
@@ -18,6 +14,7 @@
     // $('#example').dataTable();
   });
 </script>
+
 
 
 <form id="new_order" action="#" method="post", name="new_order">
