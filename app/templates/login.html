@@ -1,0 +1,15 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+	<div class="container">
+		<div style="height:50px;"></div>
+		<div class="row">
+
+			<div class="col-md-4 col-md-offset-4">
+			<h2>Login page</h2>
+				{{ wtf.quick_form(login_form, method='post', action='home', form_type='horizontal')}}			
+			</div>
+		</div>
+	</div>
+	
+{% endblock %}
