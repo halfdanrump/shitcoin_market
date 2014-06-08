@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import IntegerField, SelectField, RadioField, SubmitField, TextField, BooleanField
+from wtforms import IntegerField, SelectField, RadioField, SubmitField, TextField, BooleanField, PasswordField
 from wtforms.validators import DataRequired, length
 from app.dbase.models import Order
 import random
@@ -20,6 +20,8 @@ class UserRegisterForm(Form):
 
 
 class UserLoginForm(Form):
-	openid = TextField(label = 'openid', validators = [DataRequired()])
+	# openid = TextField(label = 'openid', validators = [DataRequired()])
+	username = TextField(label = 'openid', validators = [DataRequired()])
+	password = PasswordField(label = 'password', validators = [DataRequired()])
 	remember_me = BooleanField(label = 'remember me', default = False)
-	submit_button = SubmitField('Log in!')
+	submit_button = SubmitField('Sign in!')

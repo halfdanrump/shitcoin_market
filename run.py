@@ -22,7 +22,7 @@ if __name__ == "__main__":
         configuration = ProductionConfig()
     
     flapp.config.from_object(configuration)
-    # db.create_all()
+    db.create_all()
     # print flapp.config    
     book = Orderbook()
     flapp.book = book

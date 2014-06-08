@@ -38,7 +38,8 @@ class User(db.Model):
 	"""
 	__tablename__ = 'users'
 	id = db.Column( db.Integer, primary_key = True )
-	name = db.Column( db.String(100) )
+	openid = db.Column( db.String(), unique = True )
+	username = db.Column( db.String(100) )
 	email = db.Column( db.String(100) )
 	
 	orders = db.relationship( 'Order', backref = 'owner', lazy = 'dynamic')
@@ -48,9 +49,13 @@ class User(db.Model):
 	def __init__(self, **kwargs):
 		if kwargs.has_key('name'): self.name = kwargs['name']
 		if kwargs.has_key('email'): self.email = kwargs['email']
+		if kwargs.has_key('openid'): 
+			print kwargs['openid']
+			self.openid = kwargs['openid']
 
 	def __repr__(self):
-		return '<User>id: %s, name: %s, email: %s'%(self.id, self.name, self.email)
+		return str(__dict__)
+		# return '<User>id: %s, name: %s, email: %s'%(self.id, self.name, self.email)
 	
 
 @create
