@@ -35,3 +35,5 @@ nosetests.xml
 .project
 .pydevproject
 app/logs/orderbook.log
+app/logs/
+orderbook.log
