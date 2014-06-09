@@ -1,4 +1,4 @@
-{% extends "bootstrap/base.html" %}
+{% extends "base.html" %}
 {% import "bootstrap/fixes.html" as fixes %}
 
 
@@ -21,21 +21,18 @@
 {% block title %} Shitcoin market {% endblock %}
 
 {% block content %}
-    <div style="height:50px;"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4">
-                {% include 'order_form.html' %}        
-            </div>
-            <div class="col-lg-4">
-                {% include 'orderbook_status.html' %}        
-            </div>
-            <div class="col-lg-4">
-                {% include 'order_history.html' %}        
-            </div>
+    {{super()}}
+    <div class="row">
+        <div class="col-lg-4">
+            {% include 'order_form.html' %}        
+        </div>
+        <div class="col-lg-4">
+            {% include 'orderbook_status.html' %}        
+        </div>
+        <div class="col-lg-4">
+            {% include 'order_history.html' %}        
         </div>
     </div>
-    
 {% endblock %}
 
 

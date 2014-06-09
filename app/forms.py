@@ -13,7 +13,7 @@ class OrderForm(Form):
 
 
 class UserRegisterForm(Form):
-	username = TextField(label = 'username', validators = [DataRequired(), length(min = 6, max = 50, message = 'Username must be between 6 and 50 characters')])
+	username = TextField(label = 'username', validators = [DataRequired(), length(min = 3, max = 50, message = 'Username must be between 6 and 50 characters')])
 	submit_button = SubmitField('Sign up!')
 	def validate_name(self, name):
 		return True

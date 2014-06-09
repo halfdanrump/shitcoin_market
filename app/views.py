@@ -34,9 +34,8 @@ def create_or_login(response):
 		logger.debug( 'User not registered in system: %s'%response.identity_url )
 		register_form = UserRegisterForm()
 		if register_form.validate_on_submit():
-			
-			user = User.create(openid = response.identity_url, **form.data)
-			logger.debug( 'Created user %s'%user )
+			g.user = User.create(openid = response.identity_url, **form.data)
+			logger.debug( 'Created user %s'%g.user )
 		return render_template("create_profile.html", identity_url = response.identity_url, register_form = register_form)
 		# return redirect( url_for( 'create_profile', next=oid.get_next_url(), identity_url = response.identity_url) )
 

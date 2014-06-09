@@ -21,6 +21,7 @@ from flask_bootstrap import Bootstrap
 Bootstrap(flapp)
 
 from flask.ext.openid import OpenID
+print basedir
 oid = OpenID(flapp, os.path.join(basedir, 'tmp'), safe_roots=[])
 
 from app.config.app_config import DevelopmentConfig
