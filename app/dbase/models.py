@@ -54,7 +54,7 @@ class User(db.Model):
 			self.openid = kwargs['openid']
 
 	def __repr__(self):
-		return str(__dict__)
+		return str(self.__dict__)
 		# return '<User>id: %s, name: %s, email: %s'%(self.id, self.name, self.email)
 	
 
