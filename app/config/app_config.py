@@ -6,7 +6,7 @@ basedir = os.path.abspath(os.path.join(os.path.split(os.path.dirname(__file__))[
 # SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
 class BaseConfig():
-	SRF_ENABLED = True
+	CSRF_ENABLED = True
 	SECRET_KEY = os.urandom(16)
 	JSON_DATETIME_FORMAT = '%Y-%m-%d-%H:%M'
 	PSQL_ROLE = 'halfdan'
