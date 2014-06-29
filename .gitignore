@@ -38,3 +38,4 @@ app/logs/orderbook.log
 app/logs/
 orderbook.log
 app/tmp/
+dump.rdb
