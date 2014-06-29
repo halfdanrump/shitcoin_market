@@ -13,15 +13,15 @@ class OrderForm(Form):
 
 
 class UserRegisterForm(Form):
-	username = TextField(label = 'username', validators = [DataRequired(), length(min = 3, max = 50, message = 'Username must be between 6 and 50 characters')])
+	nickname = TextField(label = 'nickname', validators = [DataRequired(), length(min = 3, max = 50, message = 'Username must be between 6 and 50 characters')])
 	submit_button = SubmitField('Sign up!')
 	def validate_name(self, name):
 		return True
 
 
 class UserLoginForm(Form):
-	# openid = TextField(label = 'openid', validators = [DataRequired()])
-	username = TextField(label = 'openid', validators = [DataRequired()])
-	password = PasswordField(label = 'password', validators = [DataRequired()])
+	openid = TextField(label = 'openid', default = 'https://www.google.com/accounts/o8/id')
+	nickname = TextField(label = 'nickname')
+	password = PasswordField(label = 'password')
 	remember_me = BooleanField(label = 'remember me', default = False)
 	submit_button = SubmitField('Sign in!')

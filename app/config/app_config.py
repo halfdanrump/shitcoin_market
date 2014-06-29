@@ -18,6 +18,8 @@ class BaseConfig():
 	    { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }
 	    ]
 
+	USER_START_WEALTH = 10000
+
 class TestConfig(BaseConfig):
 	DEBUG = True
 	REDIS_PREFIX = 'test'
