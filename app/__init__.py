@@ -39,6 +39,7 @@ flapp.config.from_object(DevelopmentConfig())
 from flask.ext.sqlalchemy import SQLAlchemy
 db = SQLAlchemy(flapp)
 
+
 flapp.orderbooks = dict()
 
 from flask.ext.socketio import SocketIO

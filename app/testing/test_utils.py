@@ -11,6 +11,8 @@ def init_db(setup_func):
 		return setup_func
 	return recreate_schema
 
+
+
 def clear_redis_keys(setup_func):
 	"""
 	Decorator to clear redis keys before tests. Apply this decorator to the setUp method of a test class.

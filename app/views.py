@@ -5,7 +5,6 @@ from app.dbase.models import User
 from app import logger
 import uuid
 
-
 @flapp.before_request
 def lookup_current_user():
 	
@@ -18,7 +17,11 @@ def lookup_current_user():
 
 @flapp.route('/', methods = ['GET'])
 def index():
+	print 'UUUUUUUUUUUUUUSER'
+	print g.user
+
 	if g.user is None: 
+
 		return redirect(url_for('login'))
 	else: 
 		return redirect( url_for('home') )
@@ -47,7 +50,8 @@ def login():
 
 	if login_form.validate_on_submit():
 		openid = request.form.get('openid')
-		return oid.try_login(openid, ask_for=['email'])
+		session['remember_me'] = login_form.remember_me.data
+		return oid.try_login(openid)
 
 	return render_template('login.html', login_form = login_form)
 
@@ -76,7 +80,7 @@ def create_profile():
 	logger.debug(session)
 	if g.user is not None or 'openid' not in session:
 		logger.debug( 'Redicredting user %s to home screen...'%g.user)
-		return redirect(url_for('/'))
+		return redirect('/')
 	
 	register_form = UserRegisterForm()
 	if register_form.validate_on_submit():

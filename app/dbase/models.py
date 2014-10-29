@@ -28,8 +28,7 @@ def create(model):
 	model.create = autoinsert
 	return model
 
-
-
+	
 @create
 class User(db.Model):
 	"""
@@ -47,7 +46,7 @@ class User(db.Model):
 	sell_transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')
 	
 	def __init__(self, **kwargs):
-		if kwargs.has_key('name'): self.name = kwargs['name']
+		if kwargs.has_key('username'): self.username = kwargs['username']
 		if kwargs.has_key('email'): self.email = kwargs['email']
 		if kwargs.has_key('openid'): 
 			print kwargs['openid']

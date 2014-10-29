@@ -30,24 +30,24 @@ class DatabaseRelationsTest(unittest.TestCase):
 	
 	def test_database_insertion(self):
 		self.assertTrue(len(User.query.all()) == 0)
-		user = User.create(name = 'Halfdan')
+		user = User.create(username = 'Halfdan')
 		self.assertTrue(len(User.query.all()) == 1)
 
 	def test_user_order_relations(self):
-		user = User.create(name = 'Halfdan')
+		user = User.create(username = 'Halfdan')
 		order = Order.create(owner = user)
-		retreived_user = User.query.filter_by(name = 'Halfdan').first()
+		retreived_user = User.query.filter_by(username = 'Halfdan').first()
 		self.assertTrue(order.owner.id == retreived_user.id)
 
 	def test_user_order_transaction_relatons(self):
-		halfdan = User.create(name = 'Halfdan')
-		sachie = User.create(name = 'Sachie')
-		buy_order = Order.create(owner = halfdan, side = Order.BUY)
-		sell_order = Order.create(owner = sachie, side = Order.SELL)
+		buyer = User.create(username = 'buyer')
+		seller = User.create(username = 'seller')
+		buy_order = Order.create(owner = buyer, side = Order.BUY)
+		sell_order = Order.create(owner = seller, side = Order.SELL)
 		transaction = Transaction(buy_order, sell_order, 1)
 		
-		halfdan_fromdb = User.query.filter_by(name = 'Halfdan').first()
-		sachie_fromdb = User.query.filter_by(name = 'Sachie').first()
+		buyer_fromdb = User.query.filter_by(username = 'buyer').first()
+		seller_fromdb = User.query.filter_by(username = 'seller').first()
 		
-		self.assertTrue(transaction.buyer.id == halfdan_fromdb.id)
-		self.assertTrue(transaction.seller.id == sachie_fromdb.id)
+		self.assertTrue(transaction.buyer.id == buyer_fromdb.id)
+		self.assertTrue(transaction.seller.id == seller_fromdb.id)
