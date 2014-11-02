@@ -36,11 +36,11 @@ class User(db.Model):
 	Has one-way relationship with Transactions
 	"""
 	__tablename__ = 'users'
-	__repr_fields = ['id', 'nickname', 'openid']
+	__repr_fields = ['id', 'username', 'openid']
 
 	id = db.Column( db.Integer, primary_key = True )
 	openid = db.Column( db.String(), unique = True )
-	nickname = db.Column( db.String(100) )
+	username = db.Column( db.String(100) )
 	email = db.Column( db.String(100) )
 	
 	orders = db.relationship( 'Order', backref = 'owner', lazy = 'dynamic')
@@ -48,7 +48,7 @@ class User(db.Model):
 	sell_transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')
 	
 	def __init__(self, **kwargs):
-		if kwargs.has_key('nickname'): self.nickname = kwargs['nickname']
+		if kwargs.has_key('username'): self.username = kwargs['username']
 		if kwargs.has_key('email'): self.email = kwargs['email']
 		if kwargs.has_key('openid'): 
 			print kwargs['openid']

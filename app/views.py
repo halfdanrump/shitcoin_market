@@ -53,8 +53,8 @@ def home():
 # 	if not g.user is None and g.user.is_authenticated():
 # 		redirect( url_for('home') )
 # 	else:
-# 		nickname = request.form.get('nickname')
-# 		nickname = request.form.get('password')
+# 		username = request.form.get('username')
+# 		username = request.form.get('password')
 
 @flapp.route('/login', methods = ['GET', 'POST'])
 @oid.loginhandler
@@ -97,7 +97,7 @@ def create_profile():
 	else:
 		register_form = UserRegisterForm()
 		if register_form.validate_on_submit():
-			new_user = User.create(nickname = register_form.nickname.data, openid = session['openid'])
+			new_user = User.create(username = register_form.username.data, openid = session['openid'])
 			logger.debug( 'Creating new user %s'%new_user )
 			g.user = new_user
 			logger.debug( oid.get_next_url())
