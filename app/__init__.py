@@ -2,6 +2,7 @@ import logging.config, logging.handlers, yaml
 from config.app_config import basedir
 import os
 import sys
+from flask_user import SQLAlchemyAdapter, UserManager
 
 logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
@@ -48,6 +49,9 @@ socketio = SocketIO(flapp)
 from redis import Redis
 rcon = Redis()
 
+from dbase.models import User
+db_adapter = SQLAlchemyAdapter(db, User)        # Register the User model
+user_manager = UserManager(db_adapter, flapp)     # Initialize Flask-User
 
 
 import views, forms

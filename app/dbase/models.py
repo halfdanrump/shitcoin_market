@@ -40,8 +40,15 @@ class User(db.Model):
 
 	id = db.Column( db.Integer, primary_key = True )
 	openid = db.Column( db.String(), unique = True )
+
 	username = db.Column( db.String(100) )
+	password = db.Column(db.String(255), nullable=False, default='')
+	reset_password_token = db.Column(db.String(100), nullable=False, default='')
+	confirmed_at = db.Column(db.DateTime())
+
+
 	email = db.Column( db.String(100) )
+
 	
 	orders = db.relationship( 'Order', backref = 'owner', lazy = 'dynamic')
 	buy_transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')

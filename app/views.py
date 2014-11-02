@@ -4,7 +4,7 @@ from forms import OrderForm, UserLoginForm, UserRegisterForm
 from app.dbase.models import User
 from app import logger
 import uuid
-from flask_login import login_required
+from flask_user import login_required, UserManager, UserMixin, SQLAlchemyAdapter
 
 @flapp.before_request
 def lookup_current_user():
@@ -20,7 +20,7 @@ def lookup_current_user():
 
 @flapp.route('/', methods = ['GET'])
 def index():
-	
+	print g.user
 	if g.user is None: 
 		return redirect(url_for('login'))
 	else: 
