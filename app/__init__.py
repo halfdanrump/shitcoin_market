@@ -39,6 +39,8 @@ flapp.config.from_object(DevelopmentConfig())
 from flask.ext.sqlalchemy import SQLAlchemy
 db = SQLAlchemy(flapp)
 
+from dbase.dbutils import init_db
+init_db(flapp)
 
 flapp.orderbooks = dict()
 
