@@ -13,7 +13,7 @@ class DatabaseRelationsTest(unittest.TestCase):
 	# @clear_redis_keys
 	def setUp(self):
 		pass
-		
+
 		# print 'Create books and orders etc.'
 		# self.book = Orderbook()
 		

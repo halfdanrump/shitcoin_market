@@ -16,5 +16,6 @@
 </script>
 
 <h2>Order form</h2>
+<hr>
 {% import "bootstrap/wtf.html" as wtf %}
 {{ wtf.quick_form(order_form, method='post', action='#', id='new_order', form_type='horizontal')}}

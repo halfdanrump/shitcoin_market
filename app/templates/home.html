@@ -20,9 +20,28 @@
 
 {% block title %} Shitcoin market {% endblock %}
 
+{% block navbar %}
+    {{ super() }}
+    {% block accountnavigation %}
+        <ul class="nav navbar-nav navbar-right">
+            <li class="navbar-text">Signed in as {{user.nickname}}</li>
+            <li class="active"><a href="/logout">Sign out</a></li>
+        </ul>
+    {% endblock %}
+{% endblock %}
+
 {% block content %}
     {{super()}}
-    WELCOME {{ user }}
+    <div class="row">
+        <div class="col-lg-8">
+        </div>
+        <div class="col-lg-2">
+            
+        </div>
+        <div class="col-lg-2">
+            
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-4">
             {% include 'order_form.html' %}        

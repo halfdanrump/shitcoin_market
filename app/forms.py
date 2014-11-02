@@ -18,6 +18,10 @@ class UserRegisterForm(Form):
 	def validate_name(self, name):
 		return True
 
+class OpenidLoginForm(Form):
+	openid = SelectField(label = 'openid', validators = [DataRequired()], choices = ['https://www.google.com/accounts/o8/id'])
+	remember_me = BooleanField(label = 'remember me', default = False)
+
 
 class UserLoginForm(Form):
 	openid = TextField(label = 'openid', default = 'https://www.google.com/accounts/o8/id')

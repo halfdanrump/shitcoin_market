@@ -4,6 +4,7 @@ from forms import OrderForm, UserLoginForm, UserRegisterForm
 from app.dbase.models import User
 from app import logger
 import uuid
+from flask_login import login_required
 
 @flapp.before_request
 def lookup_current_user():
@@ -15,12 +16,20 @@ def lookup_current_user():
 	# logger.debug('BEFORE REQUEST with url: %s, user: %s'%(request.url, g.user))
 
 
+
+
 @flapp.route('/', methods = ['GET'])
 def index():
+	
 	if g.user is None: 
 		return redirect(url_for('login'))
 	else: 
 		return redirect(url_for('home'))
+
+@login_required
+@flapp.route('/test', methods = ['GET'])
+def testroute():
+	return 'YES!'
 
 
 @flapp.route('/home', methods = ['GET', 'POST'])
@@ -29,70 +38,72 @@ def home():
 		# logger.debug('Taking logged in user to home screen %s'%g.user)
 		order_form = OrderForm()
 		buy_side, sell_side = flapp.orderbooks['book_1'].get_cumulative_book(as_json = True)
-		return render_template("home.html", order_form = order_form, auction_id = 'orderbook_id_1', user = g.user)
+		return render_template(
+				"home.html", 
+				order_form = order_form, 
+				auction_id = 'orderbook_id_1', 
+				user = g.user)
 	else:
 		flash('Please login before going to home screen')
 		return redirect(url_for('login'))
 
 
+# @flapp.route('/login', methods = ['GET'])
+# def login():
+# 	if not g.user is None and g.user.is_authenticated():
+# 		redirect( url_for('home') )
+# 	else:
+# 		nickname = request.form.get('nickname')
+# 		nickname = request.form.get('password')
+
 @flapp.route('/login', methods = ['GET', 'POST'])
 @oid.loginhandler
-def login():	
+def login_with_openid():
 	if not g.user is None and g.user.is_authenticated():
-		###
-		next_url = oid.get_next_url()
-		# logger.debug('In /login, redirecting to: %s'%next_url)
-		return redirect( next_url )
+		return redirect( oid.get_next_url() )
 	else:
-		# logger.debug('In /login, showing login form')
 		login_form = UserLoginForm()
-
 		if login_form.validate_on_submit():
 			openid = request.form.get('openid')
 			session['remember_me'] = login_form.remember_me.data
 			return oid.try_login(openid, ask_for = ['email'])
 		else:
-			users = User.query.all()
-			return render_template('login.html', login_form = login_form, users = users)
+			return render_template('login.html', login_form = login_form)
 
+@flapp.route('/logout', methods = ['GET'])
+def logout():
+	session.pop('openid', None)
+	flash('You logged out')
+	return redirect(oid.get_next_url())
 
 
 @oid.after_login
 def login_or_create(response):
 	session['openid'] = response.identity_url
-	# logger.debug( 'Login with openid: %s'%session['openid'] )
 	user = User.query.filter_by(openid=response.identity_url).first()
-	# logger.debug( 'Matched openid with registered user: %s'%user )
-
 	if user is not None:
 		g.user = user
-		# logger.debug( 'User signed in %s'%user )
-		flash('Successfully signed in')
-		# logger.debug('Redirecting to URL: %s'%oid.get_next_url())
 		return redirect(oid.get_next_url())
-	
-	return redirect( url_for('create_profile', next=oid.get_next_url(), openid = session['openid']) )
+	else:
+		return redirect( url_for('create_profile', next=oid.get_next_url(), openid = session['openid']) )
 
 
 @flapp.route('/create_profile', methods = ['GET', 'POST'])
 def create_profile():
-	
 	logger.debug(session)
 	if g.user is not None or 'openid' not in session:
 		logger.debug( 'Redicredting user %s to home screen...'%g.user)
 		return redirect('/')
-	
-	register_form = UserRegisterForm()
-	if register_form.validate_on_submit():
-		new_user = User.create(nickname = register_form.nickname.data, openid = session['openid'])
-		print 'AAAAAAA NEEEEEEEEEEEEEEEEEEEEW USERRRRRRRR'
-		logger.debug( 'Creating new user %s'%new_user )
-		g.user = new_user
-		logger.debug( oid.get_next_url())
-		return redirect( oid.get_next_url())
-	
-	logger.debug('RENDERING CREATE PROFILE PAGE')
-	return render_template('create_profile.html', register_form = register_form, next = oid.get_next_url())
+	else:
+		register_form = UserRegisterForm()
+		if register_form.validate_on_submit():
+			new_user = User.create(nickname = register_form.nickname.data, openid = session['openid'])
+			logger.debug( 'Creating new user %s'%new_user )
+			g.user = new_user
+			logger.debug( oid.get_next_url())
+			return redirect( oid.get_next_url())
+		else:
+			return render_template('create_profile.html', register_form = register_form, next = oid.get_next_url())
 
 
 
