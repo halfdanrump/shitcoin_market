@@ -5,6 +5,7 @@ from flask import url_for
 from app.dbase.models import User
 from uuid import uuid4
 from datetime import datetime
+from factories import UserFactory
 
 class TestRoutes(unittest.TestCase):
 
@@ -18,22 +19,39 @@ class TestRoutes(unittest.TestCase):
 		self.browser = Browser()
 		self.username = uuid4().hex
 		self.userpassword = uuid4().hex
-		self.user = User.create(username=self.username, is_enabled=True, password=user_manager.hash_password(self.userpassword), confirmed_at = datetime.now())
 
 	def tearDown(self):
 		self.browser.quit()
 		
-	def login(self):
+	def go_home(self):
 		self.browser.visit( 'http://localhost:5000')
+
+	def login(self, user):
+		self.go_home()
 		self.browser.fill_form({'username': self.username, 'password':self.userpassword})
 		self.browser.find_by_value('Sign in').click()
 
-	def test_login_with_confirmed_user(self):
-		self.login()
+	def test_login_success_with_confirmed_user(self):
+		self.login(UserFactory.seed_confirmed_user(self.username, self.userpassword))
 		assert self.browser.is_text_present('Signed in as %s'%self.username)
 
+
+	def test_login_failure_with_nonconfirmed_user(self):
+		user = UserFactory.seed_nonconfirmed_user(self.username, self.userpassword)
+		self.login(user)
+		assert self.browser.is_text_not_present('Signed in as %s'%self.userpassword)
+		assert self.browser.is_text_present('Sign in')
+
+	def test_login_failure_with_nonexisting_user(self):
+		self.go_home()
+		fake_username = uuid4().hex
+		self.browser.fill_form({'username': fake_username, 'password':uuid4().hex})
+		self.browser.find_by_value('Sign in').click()
+		assert self.browser.is_text_not_present('Signed in as %s'%fake_username)
+		assert self.browser.is_text_present('Sign in')
+
 	def test_logout(self):
-		self.login()
+		self.login(UserFactory.seed_confirmed_user(self.username, self.userpassword))
 		self.browser.click_link_by_text('Sign out')
 		assert self.browser.is_text_not_present('Signed in as %s'%self.username)
 		assert self.browser.is_text_present('Sign in')
