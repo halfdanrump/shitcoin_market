@@ -11,7 +11,7 @@ class TestRoutes(unittest.TestCase):
 
 	@classmethod
 	def setUpClass(cls):
-		# socketio.run(flapp, port = 8080)
+		socketio.run(flapp, port = flapp.config['PORT'])
 		pass
 		
 
@@ -24,12 +24,13 @@ class TestRoutes(unittest.TestCase):
 		self.browser.quit()
 		
 	def go_home(self):
-		self.browser.visit( 'http://localhost:5000')
+		self.browser.visit( 'http://localhost:%s'%flapp.config['PORT'])
 
 	def login(self, user):
 		self.go_home()
 		self.browser.fill_form({'username': self.username, 'password':self.userpassword})
 		self.browser.find_by_value('Sign in').click()
+
 
 	def test_login_success_with_confirmed_user(self):
 		self.login(UserFactory.seed_confirmed_user(self.username, self.userpassword))
