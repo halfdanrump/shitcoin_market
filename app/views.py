@@ -4,7 +4,7 @@ from forms import OrderForm, UserLoginForm, UserRegisterForm
 from app.dbase.models import User
 from app import logger
 import uuid
-from flask_user import login_required
+from flask_user import login_required, current_user
 
 # @flapp.before_request
 # def lookup_current_user():
@@ -39,17 +39,14 @@ def testroute():
 @flapp.route('/', methods = ['GET', 'POST'])
 @login_required
 def home():
-	
-	# print g.user
-	# if g.user:
-	print 'UUUUUUUUUUUUUUUUUUUUUUULLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL'
-	# logger.debug('Taking logged in user to home screen %s'%g.user)
 	order_form = OrderForm()
 	buy_side, sell_side = flapp.orderbooks['book_1'].get_cumulative_book(as_json = True)
 	return render_template(
 			"home.html", 
 			order_form = order_form, 
-			auction_id = 'orderbook_id_1'
+			auction_id = 'orderbook_id_1',
+			user = current_user,
+			sign_out_url = flapp.config['USER_LOGOUT_URL']
 			)
 	# else:
 	# 	flash('Please login before going to home screen')
