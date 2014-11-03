@@ -19,6 +19,13 @@ class BaseConfig():
 	    ]
 
 	USER_START_WEALTH = 10000
+	MAIL_USERNAME =           os.getenv('MAIL_USERNAME',        'shitcoinmarket@gmail.com')
+	MAIL_PASSWORD =           os.getenv('MAIL_PASSWORD',        'a54a425452244d37ae86121d6dc46fa4')
+	MAIL_DEFAULT_SENDER =     os.getenv('MAIL_DEFAULT_SENDER',  '"MyApp" <shitcoinmarket@gmail.com>')
+	MAIL_SERVER =             os.getenv('MAIL_SERVER',          'smtp.gmail.com')
+	MAIL_PORT =           int(os.getenv('MAIL_PORT',            '465'))
+	MAIL_USE_SSL =        int(os.getenv('MAIL_USE_SSL',         True))
+
 
 class TestConfig(BaseConfig):
 	DEBUG = True

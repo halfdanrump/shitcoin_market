@@ -5,7 +5,7 @@ from copy import deepcopy
 import json
 import functools
 from datetime import datetime
-
+from flask_user import UserMixin
 
 transaction_user_association = db.Table('transaction_user_association', db.metadata,
 		db.Column( 'user_id', db.Integer, db.ForeignKey('users.id')),
@@ -28,9 +28,9 @@ def create(model):
 	model.create = autoinsert
 	return model
 
-	
+import inspect, pprint
 @create
-class User(db.Model):
+class User(db.Model, UserMixin):
 	"""
 	Has bidirectional one-to-many relationship with Orders
 	Has one-way relationship with Transactions
@@ -53,23 +53,36 @@ class User(db.Model):
 	orders = db.relationship( 'Order', backref = 'owner', lazy = 'dynamic')
 	buy_transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')
 	sell_transactions = db.relationship( 'Transaction', secondary = transaction_user_association, lazy = 'dynamic')
-	
+	is_enabled = db.Column(db.Boolean(), nullable=False, server_default='0')
+
 	def __init__(self, **kwargs):
+		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
+		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
+		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
+		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
+		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
+		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
+		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
+		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
+		print kwargs
+		print pprint.pprint(inspect.trace())
 		if kwargs.has_key('username'): self.username = kwargs['username']
 		if kwargs.has_key('email'): self.email = kwargs['email']
 		if kwargs.has_key('openid'): 
 			print kwargs['openid']
 			self.openid = kwargs['openid']
+		if kwargs.has_key('password'):
+			self.password = kwargs['password']
 
 	def __repr__(self):
-		return str(dict(zip(User.__repr_fields, map(lambda a: getattr(self, a), User.__repr_fields))))
+		# return str(dict(zip(User.__repr_fields, map(lambda a: getattr(self, a), User.__repr_fields))))
 		return str(self.__dict__)
 		# return '<User>id: %s, name: %s, email: %s'%(self.id, self.name, self.email)
 
-	def is_authenticated(self):
-		return True
-
 	def is_active(self):
+		return self.is_enabled
+
+	def is_authenticated(self):
 		return True
 
 	def is_anonymous(self):

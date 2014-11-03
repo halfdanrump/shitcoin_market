@@ -2,7 +2,7 @@ import logging.config, logging.handlers, yaml
 from config.app_config import basedir
 import os
 import sys
-from flask_user import SQLAlchemyAdapter, UserManager
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
@@ -40,6 +40,8 @@ flapp.config.from_object(DevelopmentConfig())
 from flask.ext.sqlalchemy import SQLAlchemy
 db = SQLAlchemy(flapp)
 
+# from dbase.dbutils import init_db
+# init_db(flapp)
 
 flapp.orderbooks = dict()
 
@@ -49,10 +51,14 @@ socketio = SocketIO(flapp)
 from redis import Redis
 rcon = Redis()
 
+from flask_user import SQLAlchemyAdapter, UserManager
 from dbase.models import User
 db_adapter = SQLAlchemyAdapter(db, User)        # Register the User model
 user_manager = UserManager(db_adapter, flapp)     # Initialize Flask-User
 
+from flask_mail import Mail
+mail = Mail(flapp)
+mail.init_app(flapp)
 
 import views, forms
 # import forms, views, eventhandlers, market, testing, utils, dbase
