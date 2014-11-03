@@ -34,6 +34,7 @@ from flask_user import login_required, current_user
 @flapp.route('/test', methods = ['GET'])
 @login_required
 def testroute():
+	print flapp.config.get('TESTING')
 	return 'YES!'
 
 @flapp.route('/', methods = ['GET', 'POST'])

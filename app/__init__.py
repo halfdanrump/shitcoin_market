@@ -60,5 +60,7 @@ from flask_mail import Mail
 mail = Mail(flapp)
 mail.init_app(flapp)
 
+flapp.config['TESTING'] = True
+flapp.config['LOGIN_DISABLED'] = True
 import views, forms
 # import forms, views, eventhandlers, market, testing, utils, dbase

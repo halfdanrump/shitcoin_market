@@ -73,6 +73,10 @@ class User(db.Model, UserMixin):
 			self.openid = kwargs['openid']
 		if kwargs.has_key('password'):
 			self.password = kwargs['password']
+		if kwargs.has_key('is_enabled'):
+			self.is_enabled = kwargs['is_enabled']
+		if kwargs.has_key('confirmed_at'):
+			self.confirmed_at = kwargs['confirmed_at']
 
 	def __repr__(self):
 		# return str(dict(zip(User.__repr_fields, map(lambda a: getattr(self, a), User.__repr_fields))))

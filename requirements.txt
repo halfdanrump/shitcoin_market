@@ -21,3 +21,5 @@ psycopg2==2.5.2
 flask-bootstrap==3.1.1.2
 Flask-OpenID==1.2.1
 Flask-Login
+flask_user
+splinter
