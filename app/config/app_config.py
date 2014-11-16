@@ -1,9 +1,15 @@
 import os
-import os
 basedir = os.path.abspath(os.path.join(os.path.split(os.path.dirname(__file__))[:-1])[0])
 
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 # SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
+
+
+
+
+
+
+
 
 class BaseConfig():
 	CSRF_ENABLED = True
@@ -33,15 +39,18 @@ class TestConfig(BaseConfig):
 	PSQL_DATABASE = 'shitcoin_test'
 	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan:halfdan@localhost/shitcoin_test"
 	LOGFILE = ''
+	PORT = 5001
 
 class DevelopmentConfig(BaseConfig):
 	DEBUG = True
 	REDIS_PREFIX = 'development'
 	PSQL_DATABASE = 'shitcoin_dev'
 	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan:halfdan@localhost/shitcoin_dev"
+	PORT = 5000
 
 class ProductionConfig(BaseConfig):
 	DEBUG = False
 	REDIS_PREFIX = 'production'
 	PSQL_DATABASE = 'shitcoin_prod'
 	SQLALCHEMY_DATABASE_URI = "postgresql://halfdan:halfdan@localhost/shitcoin_prod"
+	PORT = 80

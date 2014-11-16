@@ -3,7 +3,7 @@ from app.market.orderbook import Orderbook
 from app.config.app_config import TestConfig, DevelopmentConfig, ProductionConfig
 from threading import Thread
 # from redis import Redis
-# from multiprocessing import Process
+from multiprocessing import Process
 
 import argparse
 if __name__ == "__main__":
@@ -24,10 +24,12 @@ if __name__ == "__main__":
     flapp.config.from_object(configuration)
 
     # print flapp.config    
-    book = Orderbook()
+    book = Orderbook('book_1')
+    book.start_auction()
+
     flapp.book = book
     flapp.orderbooks[book.uuid] = book
-    Thread(target=book.queue_daemon).start()
-    socketio.run(flapp, host = '127.0.0.1', port = 5000)
+    
+    socketio.run(flapp, host = '127.0.0.1', port = flapp.config['PORT'])
 	# app.redis = Redis()
 	# app.run(debug = True)

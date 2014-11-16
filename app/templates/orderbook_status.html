@@ -1,9 +1,10 @@
 
 <script type="text/javascript" charset="utf-8">
 	$(document).ready(function(){
-		console.log('asdasdasd');
+		
 		var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');    
 		socket.on('orderbook update', function(book){
+			console.log('Orderbook updated');
 			b = get_orderbook_html(book);
 			$('#orderbook_table').html(b);
 		});

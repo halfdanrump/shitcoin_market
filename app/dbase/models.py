@@ -28,6 +28,14 @@ def create(model):
 	model.create = autoinsert
 	return model
 
+# class Auction():
+
+# 	name
+# 	# users
+# 	pid
+# 	standingbuyorders
+# 	standingsellorders
+
 import inspect, pprint
 @create
 class User(db.Model, UserMixin):
@@ -56,16 +64,6 @@ class User(db.Model, UserMixin):
 	is_enabled = db.Column(db.Boolean(), nullable=False, server_default='0')
 
 	def __init__(self, **kwargs):
-		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
-		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
-		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
-		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
-		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
-		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
-		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
-		print 'AAAAAAAAAAAAAAAAAAAAAAAAAAASDHUHKASKJDASKDUHASIDUHISD'
-		print kwargs
-		print pprint.pprint(inspect.trace())
 		if kwargs.has_key('username'): self.username = kwargs['username']
 		if kwargs.has_key('email'): self.email = kwargs['email']
 		if kwargs.has_key('openid'): 
@@ -130,6 +128,11 @@ class Transaction(db.Model):
 		else:
 			raise Exception
 		
+
+# @create 
+# class Auction(db.Model):
+# 	__tablename__ = 'auctions'
+	
 
 @create
 @functools.total_ordering

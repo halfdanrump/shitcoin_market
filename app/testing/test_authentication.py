@@ -6,15 +6,16 @@ from app.dbase.models import User
 from uuid import uuid4
 from datetime import datetime
 from factories import UserFactory
+from test_utils import init_db
 
 class TestRoutes(unittest.TestCase):
 
 	@classmethod
 	def setUpClass(cls):
-		socketio.run(flapp, port = flapp.config['PORT'])
+		# socketio.run(flapp, port = flapp.config['PORT'])
 		pass
 		
-
+	# @init_db
 	def setUp(self):
 		self.browser = Browser()
 		self.username = uuid4().hex

@@ -11,7 +11,7 @@
         $(document).ready(function(){
             console.log('asdasdasd');
             var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');    
-            socket.emit('client requests orderbook status');
+            socket.emit('client requests orderbook status', 'CUMULATIVE_BOOK_book_1');
         });
     </script>
 

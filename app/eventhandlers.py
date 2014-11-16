@@ -1,10 +1,8 @@
 from flask.ext.socketio import emit
-from app import logger
-from app import socketio, flapp
+from app import socketio, flapp, logger, rcon
 from app.utils import prefixed
 from datetime import datetime
 import cPickle
-from app import rcon
 import urlparse
 from app.market.utils import verify_order_data
 
@@ -29,19 +27,41 @@ def order_placed(query_string):
 	except Exception, e:
 		print e
 
+@flapp.route('/order/new')
+def submit_new_order():
+	pass
 # @socketio('client requests order history')
 # def transmit_order_history_to_use():
 	
 
-@socketio.on('client requests orderbook status', namespace = '/client')
-def transmit_book_to_client(book = None):
-	if not book:
-		book = flapp.book
-		
-	buy_side, sell_side = book.get_cumulative_book(as_json = True)
+# @socketio.on('client requests orderbook status', namespace = '/client')
+# def transmit_book_to_client(book = None):
 	
-	socketio.emit('orderbook update', 
+# 	if not book:
+# 		book = flapp.book
+		
+# 	buy_side, sell_side = book.get_cumulative_book(as_json = True)
+
+# 	logger.info(buy_side)
+# 	socketio.emit('orderbook update', 
+# 				{'buy_side':buy_side, 'sell_side': sell_side}, 
+# 				namespace='/client')
+# 	logger.debug('Sent orderbook volume to client')
+	
+import json
+@socketio.on('client requests orderbook status', namespace = '/client')
+def transmit_book_to_client(rkey = None):
+	logger.warning('RKEY:::::::::::::::%s'%rkey)
+	cumulative_book = rcon.get(rkey)
+	logger.warning('CUMULATIVE BOOK %s'%cumulative_book)
+	logger.warning('CUMULATIVE BOOK %s'%type(cumulative_book))
+	try:
+		buy_side, sell_side = json.loads(rcon.get(rkey))
+		socketio.emit('orderbook update', 
 				{'buy_side':buy_side, 'sell_side': sell_side}, 
 				namespace='/client')
-	logger.debug('Sent orderbook volume to client')
+		logger.debug('Sent orderbook volume to client')
+	except TypeError, ValueError:
+		logger.exception('OADIJOASIDJAOISDJOASIJDOASIDJ')
+
 	
