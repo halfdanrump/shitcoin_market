@@ -3,6 +3,7 @@ from config.app_config import basedir
 import os
 import sys
 
+
 logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
 handler = logging.handlers.RotatingFileHandler('orderbook.log', maxBytes = 10**6)
@@ -50,7 +51,16 @@ socketio = SocketIO(flapp)
 from redis import Redis
 rcon = Redis()
 
+from flask_user import SQLAlchemyAdapter, UserManager
+from dbase.models import User
+db_adapter = SQLAlchemyAdapter(db, User)        # Register the User model
+user_manager = UserManager(db_adapter, flapp)     # Initialize Flask-User
 
+from flask_mail import Mail
+mail = Mail(flapp)
+mail.init_app(flapp)
 
+flapp.config['TESTING'] = True
+flapp.config['LOGIN_DISABLED'] = True
 import views, forms
 # import forms, views, eventhandlers, market, testing, utils, dbase

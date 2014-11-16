@@ -11,7 +11,7 @@
         $(document).ready(function(){
             console.log('asdasdasd');
             var socket = io.connect('http://' + document.domain + ':' + location.port + '/client');    
-            socket.emit('client requests orderbook status');
+            socket.emit('client requests orderbook status', 'CUMULATIVE_BOOK_book_1');
         });
     </script>
 
@@ -20,29 +20,14 @@
 
 {% block title %} Shitcoin market {% endblock %}
 
-{% block navbar %}
-    {{ super() }}
-    {% block accountnavigation %}
-        <ul class="nav navbar-nav navbar-right">
-            <li class="navbar-text">Signed in as {{user.nickname}}</li>
-            <li class="active"><a href="/logout">Sign out</a></li>
-        </ul>
-    {% endblock %}
+
+{% block usermenu %}
+    <li class="navbar-text">Signed in as {{ user.username }} </li>
+    <li class="active"><a href="{{ sign_out_url }}">Sign out</a></li>
 {% endblock %}
 
-{% block content %}
+{% block auction %}
     {{super()}}
-    <div class="row">
-        <div class="col-lg-8">
-        </div>
-        <div class="col-lg-2">
-            
-        </div>
-        <div class="col-lg-2">
-            
-        </div>
-    </div>
-    <div class="row">
         <div class="col-lg-4">
             {% include 'order_form.html' %}        
         </div>
@@ -52,7 +37,7 @@
         <div class="col-lg-4">
             {% include 'order_history.html' %}        
         </div>
-    </div>
+    
 {% endblock %}
 
 

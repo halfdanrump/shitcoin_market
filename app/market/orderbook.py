@@ -1,20 +1,15 @@
-import Queue
-import logging
 
 from cPickle import loads
 
-from uuid import uuid4
-
-import multiprocessing
+from threading import Thread
 import heapq
 from bisect import insort
-
+from app.config.redis import RedisKeyManager
 
 
 
 from app import eventhandlers
 from app import logger
-from datetime import datetime
 from redis import Redis
 import time
 import json
@@ -22,10 +17,21 @@ from app.utils import prefixed
 from app.dbase.models import Order, Transaction
 from app import db
 
-class Orderbook():
+class Market(object):
+	def __init__(self, flapp):
+		self.flapp = flapp
+		flapp.market = self
+		self.running_auctions = {}
 
-	def __init__(self):
-		self.uuid = 'book_1' # + uuid4().hex
+	def start_auction(uuid):
+		pass
+		
+
+class Orderbook(object):
+
+	def __init__(self, uuid):
+		self.uuid = uuid # + uuid4().hex
+		self.keymanager = RedisKeyManager(uuid)				
 		self.buy_orders = list()
 		self.sell_orders = list()
 		self.redis = Redis()
@@ -35,8 +41,14 @@ class Orderbook():
 	def start_auction(self):
 		""" Run this to start the auction. If the auction is already running, nothing happens"""
 		if not hasattr(self, 'daemon'):
-			self.daemon = multiprocessing.Process(name = 'auction_%s'%self.uuid, target = self.queue_daemon)		
+			self.daemon = Thread(name = 'auction_%s'%self.uuid, target = self.queue_daemon)		
 			self.daemon.start()
+			# self.osn = Thread(name = 'orderbookstatus_%s'%self.uuid, target = self.orderbook_status_notifier)		
+			# self.osn.start()
+			
+
+			# Auction.query.filter_by(uuid = self.uuid).update({'running' : True})
+			
 			logger.info('Started auction for book %s'%self.uuid)
 		else:
 			logger.info('Auction is already running at book %s'%self.uuid)
@@ -45,6 +57,7 @@ class Orderbook():
 	def stop_auction(self):
 		if hasattr(self, 'daemon'):
 			self.daemon.terminate()
+			# Auction.query.filter_by(uuid = self.uuid).update({'running' : False})
 			del self.daemon
 			logger.info('Terminated auction at book %s'%self.uuid)
 		else:
@@ -69,6 +82,13 @@ class Orderbook():
 				logger.exception(e)
 				response = e
 
+	def orderbook_status_notifier(self, rv_ttl = 400):
+		while True:
+			current_book = json.dumps(self.get_cumulative_book(as_json = True))
+			logger.debug('Sent orderbook status to Redis: %s'%current_book)
+			self.redis.set(self.keymanager['CUMULATIVE_BOOK'], json.dumps(self.get_cumulative_book(as_json = True)))
+			time.sleep(1)
+
 	def store_order(self, new_order):
 		logger.debug('Committing order %s to database'%new_order)
 		db.session.add(new_order)
@@ -92,7 +112,9 @@ class Orderbook():
 				self.add_order_to_auction(child_matching)
 			logger.debug('Standing orders: %s, %s'%(len(self.buy_orders), len(self.sell_orders)))
 		logger.debug('Finished processing orders')
-		eventhandlers.transmit_book_to_client(self)
+
+		self.redis.set(self.keymanager['CUMULATIVE_BOOK'], json.dumps(self.get_cumulative_book(as_json = True)))
+		eventhandlers.transmit_book_to_client(self.keymanager['CUMULATIVE_BOOK'])
 		
 
 	def get_matching_order(self, new_order):
@@ -122,9 +144,29 @@ class Orderbook():
 		child_new = new_order.breed( new_order.volume - transaction_volume )
 		child_matching = matching_order.breed( matching_order.volume - transaction_volume )
 		
-		transaction = Transaction(child_new, child_matching, eventhandlers)
+		transaction = Transaction(child_new, child_matching, transaction_volume)
 		# transaction_volume.transmit_transaction(transaction.get_json())
 		return child_new, child_matching
+
+
+	def get_cumulative_book(self, as_json):
+		assert isinstance(as_json, bool)
+		buy_side = dict.fromkeys(set(self.get_buy_order_prices()), 0)
+		for o in self.buy_orders: 
+			buy_side[o.price] += o.volume
+		sell_side = dict.fromkeys(set(self.get_sell_order_prices()), 0)
+		for o in self.sell_orders: 
+			sell_side[o.price] += o.volume
+
+		buy_side = sorted(buy_side.items(), reverse = True)
+		sell_side = sorted(sell_side.items(), reverse = True)
+
+		if as_json:
+			buy_side = json.dumps(buy_side)
+			sell_side = json.dumps(sell_side)
+
+		return buy_side, sell_side
+
 
 	def has_buy_orders(self):
 		if len(self.buy_orders) > 0: return True
@@ -152,23 +194,8 @@ class Orderbook():
 	def get_sell_order_prices(self):
 		return [order.price for order in self.sell_orders]
 
-	def get_cumulative_book(self, as_json):
-		assert isinstance(as_json, bool)
-		buy_side = dict.fromkeys(set(self.get_buy_order_prices()), 0)
-		for o in self.buy_orders: 
-			buy_side[o.price] += o.volume
-		sell_side = dict.fromkeys(set(self.get_sell_order_prices()), 0)
-		for o in self.sell_orders: 
-			sell_side[o.price] += o.volume
 
-		buy_side = sorted(buy_side.items(), reverse = True)
-		sell_side = sorted(sell_side.items(), reverse = True)
 
-		if as_json:
-			buy_side = json.dumps(buy_side)
-			sell_side = json.dumps(sell_side)
-
-		return buy_side, sell_side
 
 
 if __name__ == "__main__":
