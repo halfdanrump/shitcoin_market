@@ -13,7 +13,7 @@ class BasicOrderbookTests(unittest.TestCase):
 	def setUp(self):
 		# print
 		# print 'Create books and orders etc.'
-		self.book = Orderbook()
+		self.book = Orderbook('testbook')
 
 	def test_order_match_1(self):
 		"""
