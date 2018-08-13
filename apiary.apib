@@ -78,3 +78,22 @@ form of choices.
                     }
                 ]
             }
+## Test Collection [/test]
+### Create new test [POST]
+This is the endpoint for creating a new test.
+
++ Request (application/json)
+
+        {
+            "name": "new_test"
+        }
+        
++ Response 200 (application/json)
+    + Headers
+            
+            Location: /test/1
+    + Body
+    
+            {
+                "msg": "everyhing OK"
+            }
